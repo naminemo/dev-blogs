@@ -1,7 +1,4 @@
-
-
-
-
+## 常用
 往上移動一行： Option + Command + [
 往下移動一行： Option + Command + ]
 
@@ -19,4 +16,14 @@ Option + Command + Delete
 停止模擬器：Command + .
 
 Settings：Command + ,
+
+新建檔案：Command + N
+
+
+## 快速視窗調整
+
+Hide or show the Navigator：Command + 0
+Hide or show the Inspectors：Command + Option + 0
+Hide or show the Debug Area：Command + Shit + Y
+Hide or show the Canvas：Command + Option + Enter
 
