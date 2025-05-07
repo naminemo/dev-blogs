@@ -18,3 +18,5 @@ Option + Command + Delete
 啟動模擬器：Command + R 
 停止模擬器：Command + .
 
+Settings：Command + ,
+
