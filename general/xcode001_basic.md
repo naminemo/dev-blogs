@@ -27,3 +27,7 @@ Hide or show the Inspectors：Command + Option + 0
 Hide or show the Debug Area：Command + Shit + Y
 Hide or show the Canvas：Command + Option + Enter
 
+
+## 其他
+
+強制結束應用程式：Option + Command + Esc 
