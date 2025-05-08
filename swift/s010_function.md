@@ -23,6 +23,8 @@ greet("John", on: "Wednesday")\
 ```
 
 可以不鍵入 parameter names 或加入 argument label
+不想鍵入 parameter names 在前面加入 _
+想客製  argument label 就加入自己的命名
 
 ####  return multiple values from a function
 
