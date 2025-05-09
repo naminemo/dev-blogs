@@ -59,4 +59,8 @@ struct ContentView2: View {
         }
     }
 }
+
+#Preview {
+    ContentView2()
+}
 ```
