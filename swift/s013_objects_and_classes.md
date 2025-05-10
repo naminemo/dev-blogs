@@ -69,7 +69,7 @@ var namedShape: NamedShape? = NamedShape(name: "3D")
 namedShape = nil
 ```
 
-#### Try it
+#### give it a shot
 若把上面 namedShape 的 type annotation 拿掉，會有什麼變化?
 
 
