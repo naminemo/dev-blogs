@@ -1,20 +1,20 @@
 ### 永造先看目前狀態
-```git
+```bash
 git status
 ```
 
 ### 確認目前所在分支
-```git
+```bash
 git branch
 ```
 
 ### 創建分支
-```git
+```bash
 git branch 分支名稱
 ```
 
 ### 切換分支
-```git
+```bash
 git checkout 分支名稱
 ```
 
@@ -22,17 +22,27 @@ git checkout 分支名稱
 ```bash
 git checkout -b 分支名稱
 ```
-假設現在在 main 底下
-使用 git checkout -b bug-fix-download
-那麼就會立即新建且切換到新分支上
+假設現在在 main 底下，
+使用 git checkout -b bugfix
+那麼就會立即新建且切換到新分支上，新分支的名稱為 bugfix。
 
+### 合併分支
+```bash
+git merge origin/分支名稱
+```
+切換到 main 分支再進行合併
+
+#### 合拼完成後更新遠端倉庫
+```bash
+git push origin main
+```
 
 ### 刪除分支
-假計本地分支已被合併，那麼我們可以刪除不要的分支。
-先回到 main 分支底下再進行刪除其他分支的動作。
 ```bash
 git branch -d 分支名稱
 ```
+假設本地分支已被合併，通常是合併到 main 分支去，那麼我們可以刪除不要的分支。
+先回到 main 分支底下再進行刪除其他分支的動作。
 
 ### 把新建的分支推上遠端
 ```bash
