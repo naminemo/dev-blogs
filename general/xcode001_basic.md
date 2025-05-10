@@ -31,3 +31,5 @@ Hide or show the Canvas：Command + Option + Enter
 ## 其他
 
 強制結束應用程式：Option + Command + Esc 
+
+備註：在 Xcode 中，對左大括號的開頭或右大括號的結尾快點兩下可以快速反白程式碼區塊
