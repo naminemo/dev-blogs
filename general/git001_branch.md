@@ -74,9 +74,14 @@ git push -u origin 分支名稱
 ```bash
 git push origin -d general
 ```
+-d 為 --delete 的簡寫形式
 
 
-
+### 清理失效的遠端追蹤分支
+```bash
+git fetch -p
+```
+-p 為 --prune 的簡寫形式
 
 
 
