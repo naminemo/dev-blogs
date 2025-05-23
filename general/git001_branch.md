@@ -26,6 +26,20 @@ git checkout -b 分支名稱
 使用 git checkout -b bugfix
 那麼就會立即新建且切換到新分支上，新分支的名稱為 bugfix。
 
+### 列出所有遠端追蹤分支
+```bash
+git branch -r
+```
+-r 表示 --remotes
+
+
+### 列出所有本地和遠端追蹤分支
+```bash
+git branch -a
+```
+-a 表示 --all
+
+
 ### 合併分支
 ```bash
 git merge origin/分支名稱
@@ -55,6 +69,14 @@ git push --set-upstream origin 分支名稱
 ```bash
 git push -u origin 分支名稱
 ```
+
+### 刪除遠端分支
+```bash
+git push origin -d general
+```
+
+
+
 
 
 
