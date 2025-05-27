@@ -1,12 +1,21 @@
-### 使用 markdown preview enhanced
-在 VS Code 中按下 Cmd + Shift + P  
-輸入 MPE:CSS  
+### 使用 Markdown Preview Enhanced
 
-輸入下面內容
+先去 Extensions 安裝  
+Markdown Preview Enhanced / Yiyi Wang  
+![ss 2025-05-27 15-26-11](https://raw.githubusercontent.com/naminemo/pic/main/dev/ss%202025-05-27%2015-26-11.jpg#w80)
+
+
+安裝完後在 VS Code 中按下 Cmd + Shift + P  
+輸入 mpecss  
+![mpecss](https://raw.githubusercontent.com/naminemo/pic/main/dev/css%20%0A.jpg)  
+選擇 Markdown Preview Enhanced: Customize CSS (Global)
+
+
+把內容替換成下面內容
 ```css
+
 /* Please visit the URL below for more information: */
 /*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
-
 
 @font-face {
   //font-family: 'cwTeX 圓體';
