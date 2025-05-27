@@ -49,6 +49,12 @@ $ defaults write com.apple.screencapture location ~/Desktop/Screenshot
 `$ rename 's/\./-/; s/\./-/;' "ss "*` 
 
 以後要快速整批重新命名截圖出來的檔名  
-以後只要執行下列兩行即可  
-`$ cd Desktop/Screenshot/`  
-`$ rename 's/\./-/; s/\./-/;' "ss "*`
+以後只要執行下列兩行即可
+```bash
+cd Desktop/Screenshot/
+```  
+
+```bash
+rename 's/\./-/; s/\./-/;' "ss "*
+``` 
+
