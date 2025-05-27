@@ -4,7 +4,7 @@
 在 Swift 中，作用域通常由以下結構定義：
 
   - 全域作用域 (Global Scope):   
-  在任何函數、類別或結構之外定義的變數，可以在整個模組（檔案）中被訪問。
+  在任何函數、類別或結構之外定義的變數，可以在整個模組 (檔案) 中被訪問。
   - 模組作用域 (Module Scope):   
   一個 Swift 檔案本身就是一個模組，在該檔案中定義的全域變數屬於模組作用域。
   - 函數作用域 (Function Scope):   
@@ -32,3 +32,5 @@ func myFunction() {
 // print(functionVariable) // errors: functionVariable 不在此作用域
 myFunction() 
 ```
+
+變數作用域定義了變數的**生存範圍**，不在該範圍則失效。
