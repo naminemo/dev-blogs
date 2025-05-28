@@ -188,3 +188,12 @@ struct ThirdView: View {
 
 這裡沒有讓每個視圖自己去創建 SharedData，而是從外部 (WindowGroup 層) 注射給它。
 
+
+
+### Navigation
+
+  - Hierarchical Navigation
+  - Flat Navigation
+  - Content-Driven Navigation
+
+
