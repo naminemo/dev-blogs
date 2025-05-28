@@ -1,5 +1,5 @@
 
-### 關於 State 和 Binding 的那些二三事
+### 關於 State 和 Binding 的那些二三事 (上)
 
 我們知道使用 @State 和 @Binding 可以實現 SwiftUI 中的狀態管理。  
 @State 用於在視圖內部管理狀態，而 @Binding 則用於將狀態從父視圖傳遞到子視圖。

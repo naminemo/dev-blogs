@@ -1,3 +1,4 @@
+### 關於 State 和 Binding 的那些二三事 (下)
 
 使用 @State 和 @Binding 來實現三個或者更多 View 共享資料並同步更新，會變得非常麻煩和不切實際，尤其當 View 層級較深時。
 
@@ -231,4 +232,9 @@ struct TestViewPassingValueApp: App {
   - 不適合大規模應用： 在大型複雜應用中，這種方式會讓資料流變得混亂，難以追蹤和維護。
 
 
+### 結論
+理論上使用 @State 和 @Binding 來實現多層視圖資料共享，但它會導致**資料傳遞鏈 (Prop Drilling)**的問題，使得程式碼變得臃腫、難以閱讀和維護。
 
+
+對於需要跨多個不相關或深層級的 View 共享狀態的情況，@ObservableObject 結合 @EnvironmentObject 或 @StateObject 是更優雅、更推薦的 SwiftUI 模式。  
+它將共享的資料抽離到一個獨立的物件中，並通過環境自動提供給需要它的 View，極大地簡化了資料傳遞。
