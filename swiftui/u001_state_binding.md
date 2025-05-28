@@ -170,3 +170,25 @@ struct ThirdView: View {
 }
 ```
 
+這個範例實現了 FirstView 能傳資料到 SecondView，SecondView 能傳資料到 ThirdView。
+而且 SecondView 跟 ThirdView 的資料也能互傳。  
+
+這裡有個非常顯眼的錯誤，就是我們使用了 NavigationView。
+雖然目前這個程式執行起來好像也是能動的樣子。 
+
+NavigationView 在 doc 有說明到 iOS 13.0–18.4 Deprecated。
+也就是 iOS 13.0–18.4 仍然還是給你用，但未來會捨棄不用了。  
+我想也是因為 NavigationView 它非預期的 bug 有點常遇到，  
+所以早早出了 NavigationStack 來使用。
+
+### 常會出現的錯誤 
+"在 ThirdView 一輸入文字就跳回 SecondView"，這是一個 SwiftUI NavigationView 和 NavigationLink 常見的非預期行為，尤其是在 TextField 導致視圖更新時。
+
+NavigationView 的舊行為導致 View 的重建，在舊版的 SwiftUI，NavigationView 的內部實作有時會因為子視圖的狀態變化而導致整個導航堆疊中的視圖被不必要地重建。當 TextField 的輸入導致 sharedText 變化，觸發 ThirdView 甚至其父級視圖的重新渲染時，就可能意外觸發導航堆疊的回彈。
+
+"在更深的 View 層的 TextField 的輸入資料時，該視圖會被咬住，而無法繼續輸入"，這也是因為觸發其父級視圖的重新渲染，而造成 TextField 的焦點失焦而無法繼續輸入。
+
+### 快速修正
+
+把 NavigationView 改成 NavigationStack。
+它從根本上改進了 SwiftUI 的導航機制，解決了許多 NavigationView 的問題。
