@@ -87,14 +87,17 @@ struct FirstView: View {
     var body: some View {
         NavigationStack { 
             VStack(spacing: 20) {
-                Text("FirstView: \(sharedData.sharedText)") // 顯示共享的值
+
+                // 顯示共享的值
+                Text("FirstView: \(sharedData.sharedText)") 
 
                 // 綁定 TextField 到 sharedData.sharedText
                 TextField("在這裡輸入文字", text: $sharedData.sharedText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
 
-                NavigationLink(destination: SecondView()) { // 第二個 View
+                // 第二個 View
+                NavigationLink(destination: SecondView()) { 
                     Text("前往 SecondView")
                         .font(.headline)
                         .padding()
@@ -103,7 +106,8 @@ struct FirstView: View {
                         .cornerRadius(10)
                 }
 
-                NavigationLink(destination: ThirdView()) { // 第三個 View
+                // 第三個 View
+                NavigationLink(destination: ThirdView()) { 
                     Text("前往 ThirdView")
                         .font(.headline)
                         .padding()
@@ -128,7 +132,7 @@ struct SecondView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            Text("SecondView: \(sharedData.sharedText)") // 顯示共享的值
+            Text("SecondView: \(sharedData.sharedText)") 
 
             // 在這裡也可以修改共享的值
             TextField("在 SecondView 修改", text: $sharedData.sharedText)
@@ -136,7 +140,7 @@ struct SecondView: View {
                 .padding()
 
             Button("返回上一頁") {
-                dismiss() // 返回操作
+                dismiss() 
             }
             .font(.headline)
             .padding()
@@ -161,7 +165,7 @@ struct ThirdView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            Text("ThirdView: \(sharedData.sharedText)") // 顯示共享的值
+            Text("ThirdView: \(sharedData.sharedText)") 
 
             // 這裡 TextField 綁定到 sharedData.sharedText
             // 在這裡輸入或修改，會同步更新 FirstView 和 SecondView
@@ -170,7 +174,7 @@ struct ThirdView: View {
                 .padding()
 
             Button("返回上一頁") {
-                dismiss() // 返回操作
+                dismiss() 
             }
             .font(.headline)
             .padding()
