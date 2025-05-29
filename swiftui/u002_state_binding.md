@@ -1,4 +1,6 @@
-### 關於 State 和 Binding 的那些二三事 (下)
+## 關於狀態管理 (State Management) 的那些二三事 (二) 
+
+### State 和 Binding (下)
 
 使用 @State 和 @Binding 來實現三個或者更多 View 共享資料並同步更新，會變得非常麻煩和不切實際，尤其當 View 層級較深時。
 
