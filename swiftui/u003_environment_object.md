@@ -74,7 +74,9 @@ struct YourApp: App {
 
 
 #### 3.修改想要共享資料的 View
+
 每個 View 都會使用 @EnvironmentObject 來訪問 SharedData 實例。
+
 ```swift
 // FirstView.swift
 import SwiftUI
@@ -129,18 +131,28 @@ import SwiftUI
 struct SecondView: View {
     @EnvironmentObject var sharedData: SharedData
     @Environment(\.dismiss) var dismiss
-
+    
     var body: some View {
         VStack(spacing: 20) {
-            Text("SecondView: \(sharedData.sharedText)") 
-
+            Text("SecondView: \(sharedData.sharedText)")
+            
             // 在這裡也可以修改共享的值
             TextField("在 SecondView 修改", text: $sharedData.sharedText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
-
+            
+            // 第三個 View
+            NavigationLink(destination: ThirdView()) {
+                Text("前往 ThirdView")
+                    .font(.headline)
+                    .padding()
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            
             Button("返回上一頁") {
-                dismiss() 
+                dismiss()
             }
             .font(.headline)
             .padding()
@@ -148,8 +160,10 @@ struct SecondView: View {
             .foregroundColor(.white)
             .cornerRadius(10)
         }
-        .navigationTitle("第二個視圖")
-        // .navigationBarBackButtonHidden(true) // 如果想隱藏默認的返回按鈕
+        //.navigationTitle("第二個視圖")
+        // 不隱藏返回 (Back) 按鈕
+        // 如果前一個頁面未設標題，則用 Back 字面取代
+        .navigationBarBackButtonHidden(false)
     }
 }
 ```
@@ -162,19 +176,29 @@ import SwiftUI
 struct ThirdView: View {
     @EnvironmentObject var sharedData: SharedData
     @Environment(\.dismiss) var dismiss
-
+    
     var body: some View {
         VStack(spacing: 20) {
-            Text("ThirdView: \(sharedData.sharedText)") 
-
+            Text("ThirdView: \(sharedData.sharedText)")
+            
             // 這裡 TextField 綁定到 sharedData.sharedText
             // 在這裡輸入或修改，會同步更新 FirstView 和 SecondView
             TextField("在 ThirdView 修改", text: $sharedData.sharedText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
-
+            
+            // 第二個 View
+            NavigationLink(destination: SecondView()) {
+                Text("前往 SecondView")
+                    .font(.headline)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            
             Button("返回上一頁") {
-                dismiss() 
+                dismiss()
             }
             .font(.headline)
             .padding()
@@ -182,8 +206,8 @@ struct ThirdView: View {
             .foregroundColor(.white)
             .cornerRadius(10)
         }
-        .navigationTitle("第三個視圖")
-        // .navigationBarBackButtonHidden(true)
+        //.navigationTitle("第三個視圖")
+        .navigationBarBackButtonHidden(true) // 隱藏返回按鈕
     }
 }
 ```
