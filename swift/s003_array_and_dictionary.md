@@ -32,3 +32,19 @@ let emptyArray: [String] = []
 let emptyDictionary: [String: Float] = [:]
 
 ```
+
+
+### for-in loop
+```swift
+var fruits = ["strawberries", "limes", "tangerines"]
+
+for fruit in fruits {
+    print(fruit)
+}
+
+print("=====")
+
+for (index, value) in fruits.enumerated() {
+    print(fruits[index], value)
+}
+```
