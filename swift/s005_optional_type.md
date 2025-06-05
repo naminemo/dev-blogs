@@ -74,3 +74,17 @@ let myConstant = Int("42")
 print(type(of: myConstant))
 // Prints: Int?
 ```
+
+
+```swift
+func divide(_ number: Int, by divisor: Int) -> Int? {
+    guard divisor != 0 else {
+        return nil
+    }
+    return number / divisor
+}
+
+let divisionResult = divide(5, by: 0)
+print(type(of: divisionResult))
+// Prints: Int?
+```
