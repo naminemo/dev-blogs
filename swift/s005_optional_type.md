@@ -66,3 +66,11 @@ if 帶有驚嘆號的變數 {
     如果拿不到
 }
 ```
+
+
+###  猜猜什麼型別?
+```swift
+let myConstant = Int("42")
+print(type(of: myConstant))
+// Prints: Int?
+```
