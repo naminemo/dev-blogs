@@ -67,6 +67,15 @@ for fruits in fruits {
 }
 ```
 
+因為 fruits 是集合型別，也可以使用 forEach 來遍歷所有資料
+```swift
+var fruits = ["strawberries", "limes", "tangerines"]
+fruits.forEach { value in
+    print(value)
+}
+```
+
+
 #### 新增資料
 ```swift
 fruits += ["apple"]
