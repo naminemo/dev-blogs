@@ -56,3 +56,15 @@ switch age {
 
 而更好更安全的管控就是源頭管理，在一開始便限制使用者只能輸入 0~150 的數字。Swift 也能利用型別註記或型別宣告來限制輸入為數字。 
 這樣可以更加避免無法預料的意外發生。
+
+
+#### 更進階的技巧
+```swift
+var num = 69
+switch num {
+    case _ where num % 2 == 0:
+        print("Is even")
+    default:
+        print("Is odd")
+}
+```
