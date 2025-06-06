@@ -28,10 +28,22 @@ arr.randomElement()!
 var arr: [String] = []
 
 if(arr.isEmpty){
+    print("此陣列中沒有任何元素")
+}
+```
+
+#### count
+每個集合型別 (Array, Set, Dictionary) 都具有 count 屬性  
+來取得集合元素的數量
+```swift
+var arr: [String] = []
+
+if(arr.isEmpty){
     print(arr.count)
 }
 // Prints: 0
 ```
+
 
 #### 最終寫法
 ```swift
