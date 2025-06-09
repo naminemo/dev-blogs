@@ -236,7 +236,7 @@ struct TestViewPassingValueApp: App {
 - [資料傳遞的冗餘]  
   如果未來有 FourthView、FifthView 等，都必須一層層地傳遞這個 Binding，即使某些中間 View 並不需要直接使用這個資料。
 
-- [脆弱性]
+- [脆弱性]  
   任何一個層級的 View 忘記傳遞 Binding 都會導致編譯錯誤或運行時問題。
 
 - [不適合大規模應用]  
