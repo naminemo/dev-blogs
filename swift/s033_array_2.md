@@ -34,7 +34,7 @@ let squaredNumbers = numbers.map { $0 * $0 }
 print(squaredNumbers) 
 ```
 
-#### 函數式程式設計思想 (Functional Programming) 
+#### 函數式程式設計思想 (Functional Programming)
 
 從更高的層次來看，map 函數本身是函數式程式設計的一個核心概念。它是一種高階函數，接受一個函數 (閉包) 作為參數，並對集合中的每個元素應用這個函數，最終返回一個新的集合，而不改變原有的集合。
 
