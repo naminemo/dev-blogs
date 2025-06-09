@@ -1,3 +1,6 @@
+# 語音處理
+
+##
 
 ### AVSpeechSynthesisVoic
 
@@ -10,15 +13,15 @@ AVSpeechSynthesisVoice 使用的是 BCP 47 語言標籤來表示語言和地區�
 import AVFoundation
             
 func printAllAvailableVoiceIdentifiers() {
-	let voices = AVSpeechSynthesisVoice.speechVoices()
-	print("--- Available Voices ---")
-	for voice in voices {
-		print("Identifier: \(voice.identifier)")
-		print("  Language: \(voice.language)")
-		print("  Name: \(voice.name)")
-		print("  Quality: \(voice.quality.rawValue)")
-		print("------------------------")
-	}
+    let voices = AVSpeechSynthesisVoice.speechVoices()
+    print("--- Available Voices ---")
+    for voice in voices {
+        print("Identifier: \(voice.identifier)")
+        print("  Language: \(voice.language)")
+        print("  Name: \(voice.name)")
+        print("  Quality: \(voice.quality.rawValue)")
+        print("------------------------")
+    }
 }
 
 // 調用這個函數來打印所有可用的語音
@@ -72,7 +75,6 @@ Identifier: com.apple.voice.compact.zh-TW.Meijia
 ------------------------
 */
 ```
-
 
 該設備上所有可用的語音列表
 
@@ -144,5 +146,3 @@ Language: zh-HK, Name: 善怡, Quality: 1
 Language: zh-TW, Name: 美佳, Quality: 1
 */
 ```
-
-
