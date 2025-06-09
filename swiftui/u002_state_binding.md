@@ -244,7 +244,7 @@ struct TestViewPassingValueApp: App {
 
 ### 結論
 
-理論上使用 @State 和 @Binding 來實現多層視圖資料共享，但它會導致**資料傳遞鏈 (Prop Drilling)**的問題，使得程式碼變得臃腫、難以閱讀和維護。
+理論上使用 @State 和 @Binding 來實現多層視圖資料共享，但它會導致資料傳遞鏈 (Prop Drilling) 的問題，使得程式碼變得臃腫、難以閱讀和維護。
 
 對於需要跨多個不相關或深層級的 View 共享狀態的情況，@Published 結合 @EnvironmentObject 或 @StateObject 是更優雅、更推薦的 SwiftUI 模式。  
 它將共享的資料抽離到一個獨立的物件中，並通過環境自動提供給需要它的 View，極大地簡化了資料傳遞。
