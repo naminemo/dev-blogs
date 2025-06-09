@@ -75,7 +75,7 @@ struct YourApp: App {
 }
 ```
 
-#### @ObservableObject 與 @StateObject
+#### ObservableObject 協定 與 @StateObject
 
 @StateObject 是 SwiftUI 框架中一個非常重要的屬性包裝器 (Property Wrapper)，它主要用於管理和持有遵循 ObservableObject 協定的引用類型數據，並且確保這個數據實例在視圖的生命週期內只被創建一次。
 
