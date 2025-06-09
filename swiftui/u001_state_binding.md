@@ -10,7 +10,7 @@
 資料傳遞通常都是父視圖傳遞到子視圖。  
 現在來實驗 祖孫視圖 或 兄弟視圖 的資料傳遞。
 
-預計資料傳遞的 View Hierarchy
+預計資料傳遞的 View Hierarchy  
 FirstView -> SecondView -> ThirdView  
 FirstView -> ThirdView -> SecondView
 
@@ -184,8 +184,7 @@ struct ThirdView: View {
 
 NavigationView 在 doc 有說明到 iOS 13.0–18.4 Deprecated。
 也就是 iOS 13.0–18.4 仍然還是給你用，但未來會捨棄不用了。  
-我想也是因為 NavigationView 它非預期的 bug 有點常遇到，  
-所以出了 NavigationStack 來取代。
+我想也是因為 NavigationView 它非預期的 bug 有點常遇到，所以出了 NavigationStack 來取代。
 
 ### 常會遇到的錯誤
 
