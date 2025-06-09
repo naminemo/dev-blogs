@@ -85,8 +85,9 @@ struct YourApp: App {
 在 2019 (WWDC2019) 年，@ObservedObject 與 SwiftUI 同步推出，運行於 iOS13
 在 2020 (WWDC2020) 年，@StateObject 加入，運行於 iOS14
 
-@ObservedObject 有一個潛在的問題，那就是當包含 @ObservedObject 的視圖被重新繪製時，如果 ObservableObject 的初始化是在視圖的 body 中進行的，那麼 ObservedObject 所引用的對象可能會被重新創建。  
-這會導致數據丟失，或者導致不必要的性能開銷，因為每次重繪都會創建一個新的數據實例。
+另外，@StateObject 與 @ObservedObject 的功能非常類似。
+但兩者之者還是有一些些微的差異，，那就是當包含 @ObservedObject 的視圖被重新繪製時，如果 ObservedObject 的初始化是在視圖的 body 中進行的，那麼 ObservedObject 所引用的對象可能會被重新創建。  
+這會導致數據丟失，或者導致不必要的性能開銷，因為每次重繪都會創建一個新的數據實例，這也是 @ObservedObject 一個潛在的問題。
 
 補充：  
 在 WWDC2023，@Observable 加入，運行於 iOS17  
