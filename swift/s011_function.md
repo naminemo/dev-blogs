@@ -58,3 +58,4 @@ greet(person: "Alice", from: "Taipei")
 
 如果一個參數沒有明確指定引數標籤，Swift 會預設使用參數名稱作為引數標籤。
 
+Swift 同時擁有 引數標籤 (Argument Label) 和 參數名稱 (Parameter Name)，它們各自有不同的作用，提高了程式碼在呼叫時的可讀性 (通過引數標籤) 和在內部實現時的清晰度 (通過參數名稱) 。
