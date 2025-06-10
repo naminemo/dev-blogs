@@ -13,4 +13,26 @@ print(words)
 var airports: [String: String] = ["YYZ": "Toronto Pearson", "DUB": "Dublin"]
 print(type(of: airports["YYZ"]))
 // Optional<String>
+print(airports)
+// ["DUB": "Dublin", "YYZ": "Toronto Pearson"]
+airports["YYZ"] = nil
+print(airports)
+// ["DUB": "Dublin"]
+
+// 移除並不存在的元素不會出錯
+airports.removeValue(forKey: "我是沒有的key")
+print(airports)
+// ["DUB": "Dublin"]
+```
+
+#### 快速把鍵或值轉成陣列
+```swift
+var airports: [String: String] = ["YYZ": "Toronto Pearson", "DUB": "Dublin"]
+let airportCodes = [String](airports.keys)
+print(airportCodes)
+// airportCodes is ["LHR", "YYZ"]
+
+let airportNames = [String](airports.values)
+print(airportNames)
+// airportNames is ["London Heathrow", "Toronto Pearson"]
 ```
