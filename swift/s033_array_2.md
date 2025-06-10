@@ -185,8 +185,8 @@ sort
 
 sorted  
 
-- 返回新陣列
-- 直接修改原陣列，使其按照指定的順序排序。
+- 返回新陣列，使其按照指定的順序排序。
+- 不直接修改原陣列
 
 ```swift
 var numbers = [3, 11, 42, 18, 51, 9, 2, 6]
@@ -201,9 +201,27 @@ print(numbers)
 ```swift
 var numbers = [3, 11, 42, 18, 51, 9, 2, 6]
 numbers.sorted()
+print(numbers.sorted())
+// [2, 3, 6, 9, 11, 18, 42, 51]
 print(numbers)
 // [3, 11, 42, 18, 51, 9, 2, 6]
 numbers.sorted(by: >)
+print(numbers.sorted(by: >))
+// [51, 42, 18, 11, 9, 6, 3, 2]
 print(numbers)
 // [3, 11, 42, 18, 51, 9, 2, 6]
 ```
+
+在 apple design guidelines 裡也有提到  
+什麼是 Mutating 以及什麼是 Nonmutating
+
+直接使用動詞的命令式來表達對其變異
+例如
+array.append("x")
+array.sort()
+
+使用動詞的過去式或進行式來表達不可變異
+也就是使用後綴字加上"ed"或"ing"的方式
+既然本身是不可變異
+那代表使用了該方法會回傳一個新的變異後的值
+newArray = array.sorted()
