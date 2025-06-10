@@ -8,3 +8,9 @@ print(oldWord)
 print(words)
 // Pirnt: 這裡是隨機取出，順序通常會不一樣了
 ```
+
+```swift
+var airports: [String: String] = ["YYZ": "Toronto Pearson", "DUB": "Dublin"]
+print(type(of: airports["YYZ"]))
+// Optional<String>
+```
