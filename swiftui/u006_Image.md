@@ -29,10 +29,11 @@ u006_hello.png (去背)
 
 ### .gif
 
-接下來想顯示副檔名為 .gif 的動畫。
-Image 元件本身 不直接支援 顯示 .gif 動畫。Image 只能顯示靜態圖片，例如 .png、.jpeg 等。
+接下來想顯示副檔名為 .gif 的動畫。  
+Image 元件本身不直接支援顯示 .gif 動畫。  
+Image 只能顯示靜態圖片，例如 .png、.jpeg 等。
 
-這裡透過但你可以透過 WKWebView 包裝到 UIViewRepresentable 中來實現。
+這裡透過 WKWebView 包裝到 UIViewRepresentable 中來實現。
 
 對於高效且功能豐富的 GIF 播放，也能使用像 Kingfisher 或 SDWebImage 這樣的第三方函式庫。
 
@@ -79,7 +80,7 @@ struct ContentView: View {
 ```
 注意這邊 u06_witch.gif 檔案不能丟到 Assets 裡，直接丟在專案裡即可。
 通常會在專案底下新增一個資料夾 Resources
-然後再把 u06_witch.gif 丟到此資料夾底下  
+然後再把 u006_witch.gif 丟到此資料夾底下  
 
 ### SDWebImageSwiftU
 
