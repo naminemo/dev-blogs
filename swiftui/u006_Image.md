@@ -24,7 +24,7 @@ u006_hello.jpg (無去背)
 u006_hello.png (去背)  
 然後把想要的顯示圖片拖拉到 Assets 裡，
 這裡要注意的是放入 Image 只需要檔案名稱，不需要副檔名  
-既然只需要檔案名稱，這樣表示 u006_hello.jpg 及 u006_hello.png 會視為同一個名稱 
+既然只需要檔案名稱，這樣表示 u006_hello.jpg 及 u006_hello.png 會視為同一個名稱  
 所以這裡 u006_hello.jpg 及 u006_hello.png 只能挑一張放進去 Assets 裡
 
 ### .gif
