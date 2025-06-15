@@ -69,11 +69,43 @@ if 帶有驚嘆號的變數 {
 
 
 ###  猜猜什麼型別?
+
+```swift
+let myConstant = Int(42)
+print(type(of: myConstant))
+// Int
+print(myConstant)
+// 42
+```
+
+```swift
+let myConstant = Int(42.2)
+print(type(of: myConstant))
+// Int
+print(myConstant)
+// 42
+```
+
 ```swift
 let myConstant = Int("42")
 print(type(of: myConstant))
-// Prints: Int?
+// Optional<Int>
+print(myConstant!)
+// 42
 ```
+
+```swift
+let myConstant = Int("42.2")
+print(type(of: myConstant))
+// Optional<Int>
+print(myConstant!)
+// Fatal error: Unexpectedly found nil while unwrapping an Optional value
+```
+
+
+
+
+
 
 
 ```swift

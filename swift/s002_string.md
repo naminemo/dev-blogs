@@ -21,4 +21,23 @@ let quotation = """
 
 ```
 
+####  split
+```swift
+let dataString = "蘋果,香蕉,橘子,梨子,葡萄,芒果,鳳梨,西瓜,哈密瓜,草莓,藍莓,火龍果,奇異果"
+let fruitsArray = dataString.split(separator: ",", maxSplits: 3)
+print(fruitsArray)
+// ["蘋果", "香蕉", "橘子", "梨子,葡萄,芒果,鳳梨,西瓜,哈密瓜,草莓,藍莓,火龍果,奇異果"]
+```
 
+
+
+```swift
+let messyString = "  Hello   World  ! "
+let cleanedParts = messyString.split(separator: " ", omittingEmptySubsequences: true)
+let rawParts = messyString.split(separator: " ", omittingEmptySubsequences: false)
+
+print(cleanedParts)
+// ["Hello", "World", "!"]
+print(rawParts)
+// ["", "", "Hello", "", "", "World", "", "!", ""]
+```
