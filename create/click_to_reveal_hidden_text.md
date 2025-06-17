@@ -76,6 +76,42 @@ struct ContentView: View {
 注意： 
 此時程式是無法成功啟動的，但若你把有 onTapGesture 修飾器的程式碼拿掉，它就能成功啟動。
 
+```swift
+struct ContentView: View {
+
+    @State private var showHiddenText1 = false
+    @State private var showHiddenText2 = false
+    @State private var showHiddenText3 = false
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("事業單位勞工人數未滿") +
+            // 使用輔助函式處理挖空文字
+            hiddenText(text: "三十", isHidden: showHiddenText1) +
+            Text("人者，雇主或其代理人經職業安全衛生業務主管安全衛生教育訓練合格，") +
+            Text("得擔任該事業單位職業安全衛生業務主管。但屬第二類及第三類事業之事業單位，且勞工人數在") +
+            hiddenText(text: "五", isHidden: showHiddenText2) +
+            Text("人以下者，得由經職業安全衛生教育訓練規則第三條附表一所列") +
+            hiddenText(text: "丁種", isHidden: showHiddenText3) +
+            Text("職業安全衛生業務主管教育訓練合格之雇主或其代理人擔任。")
+        }
+        .padding()
+    }
+    
+    // 輔助函式：根據 isHidden 參數返回顯示或隱藏的 Text
+    private func hiddenText(text: String, isHidden: Bool) -> Text {
+        if isHidden {
+            return Text(text)
+                .bold() // 顯示時可以加粗或其他樣式來區分
+                .foregroundStyle(.blue) // 顯示時可以改變顏色
+        } else {
+            return Text("＿＿") // 挖空時顯示底線或其他符號
+                .foregroundStyle(.gray) // 挖空時可以改變顏色
+        }
+    }
+}
+```
+
 ### 輔助方法 hiddenText(text:isHidden:)
 
 為了避免重複程式碼，我們創建了一個名為 hiddenText 的輔助方法。
