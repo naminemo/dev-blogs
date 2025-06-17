@@ -1207,3 +1207,33 @@ struct ContentView: View {
 - 需要對每個字符位置進行優先級檢查
 - 比直接跳過重疊範圍更耗資源
 
+
+
+## 超連結
+
+```swift
+import SwiftUI
+
+struct ContentView: View {
+    
+    let linkText: AttributedString = {
+        var attributedLink = AttributedString("訪問我的網站")
+        attributedLink.link = URL(string: "https://www.apple.com")
+        attributedLink.foregroundColor = .blue
+        attributedLink.underlineStyle = .single
+        return attributedLink
+    }()
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            
+            Text(linkText)
+        }
+        .padding()
+    }
+}
+
+#Preview {
+    ContentView()
+}
+```
