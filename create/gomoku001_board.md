@@ -5,7 +5,7 @@
 ```swift
 import SwiftUI
 
-struct MyView: View {
+struct GoBoardView: View {
     
     var body: some View {
         
@@ -38,7 +38,7 @@ struct MyView: View {
 }
 
 #Preview {
-    MyView()
+    GoBoardView()
 }
 
 ```
@@ -60,7 +60,7 @@ Rectangle()
 
 
 ```swift
-struct MyView: View {
+struct GoBoardView: View {
     
     let boardSize: Int = 13
     let gridLineColor: Color = .black
