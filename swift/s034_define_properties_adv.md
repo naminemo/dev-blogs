@@ -1,4 +1,6 @@
-# Swift 中兩種常見的屬性初始化與定義方式 (Two Common Ways to Initialize and Define Properties in Swift)
+# Swift 中兩種常見的屬性初始化與定義方式 
+
+## Two Common Ways to Initialize and Define Properties
 
 先來看看兩段程式碼
 
@@ -42,24 +44,98 @@
 { ... } 是一個閉包（Closure）。  
 它就像一個小型、匿名的函式，裡面包含了設定 AttributedString 的所有步驟。  
 這個閉包會執行這些步驟，最終回傳一個完整設定好的 AttributedString 物件。
-閉包後面的這對括號 () 非常重要。它表示 "立即執行" 前面定義的閉包。  
+
+閉包後面的這對小括號 () 非常重要。它表示 "立即執行" 前面定義的閉包。  
 就像呼叫一個函式一樣，加上 () 就會讓它馬上跑起來，並把跑完的回傳值賦給 linkText。
 
-這種方式常用於初始化常數 (let)，因為常數一旦被賦值就不能再改變。
-當屬性初始化邏輯比較複雜，需要多行程式碼來設定時，但又想讓它在第一次定義時就完成所有設定，並且只執行一次。
+這種方式常用於初始化常數 (let)，因為常數一旦被賦值就不能再改變。  
+當屬性初始化邏輯比較複雜，需要多行程式碼來設定時，但又想讓它在第一次定義時就完成所有設定，並且只執行一次。  
 這確保了 linkText 在被使用時，已經是一個完全設定好且不可變的 AttributedString。
 
 ## 第二種是計算屬性 (Computed Property)
 
 它定義了一個變數 styledText，是一個計算型屬性 (Computed Property)。
 
-它宣告了一個名為 styledText 的變數，其型別為 AttributedString。
+它宣告了一個名為 styledText 的變數，其型別為 AttributedString。  
 { ... } 大括號裡面的程式碼定義了這個屬性的 "取值器" (getter)。  
 每次存取 (讀取) styledText 的時候，這段大括號裡面的程式碼都會被重新執行一遍，  
 然後回傳一個全新的 AttributedString 物件作為它的值。
 
 用途
-通常用於變數 (var)，因為它的值是動態計算的。
-當屬性的值不應該被儲存，而是需要每次被讀取時都重新計算時。
-例如，如果 styledText 的內容會因為其他變數的改變而變化，那麼每次存取它時重新計算就能保證你得到的是最新的結果。
-它不接受額外的括號 ()，因為它本身就是屬性定義的一部分，它的「執行」發生在你存取它時，而不是在定義時。  
+通常用於變數 (var)，因為它的值是動態計算的。  
+當屬性的值不應該被儲存，而是需要每次被讀取時都重新計算時。  
+例如，如果 styledText 的內容會因為其他變數的改變而變化，那麼每次存取它時重新計算就能保證你得到的是最新的結果。  
+它不接受額外的括號 ()，因為它本身就是屬性定義的一部分，它的 "執行" 發生在你存取它時，而不是在定義時。  
+
+## 來看看第一種的型別
+
+現在讓 Swift 來自動型別推論
+
+```swift
+import SwiftUI
+
+struct SwiftUIView: View {
+    
+    let linkText = {
+        var attributedLink = AttributedString("訪問我的網站")
+        attributedLink.link = URL(string: "https://www.apple.com")
+        attributedLink.foregroundColor = .blue
+        attributedLink.underlineStyle = .single
+        print("I am here")
+        return attributedLink
+    }()
+    
+    var body: some View {
+        Text("Hello, World!")
+            .onAppear() {
+                printMessage()
+            }
+    }
+    
+    func printMessage(){
+        print(type(of: linkText))
+    }
+}
+// I am here
+// AttributedString
+```
+可以看到 AttributedString 的型別為 AttributedString
+且 print("I am here") 這行程式碼有被執行到
+
+
+## 去掉小括號 ()
+
+現在來把 let linkText = {...}() 的 () 給去掉
+
+```swift
+import SwiftUI
+
+struct SwiftUIView: View {
+    
+    let linkText = {
+        var attributedLink = AttributedString("訪問我的網站")
+        attributedLink.link = URL(string: "https://www.apple.com")
+        attributedLink.foregroundColor = .blue
+        attributedLink.underlineStyle = .single
+        print("I am here")
+        return attributedLink
+    } // 這裡沒有小括號 () 了
+    
+    var body: some View {
+        Text("Hello, World!")
+            .onAppear() {
+                printMessage()
+            }
+    }
+    
+    func printMessage(){
+        print(type(of: linkText))
+    }
+}
+// () -> AttributedString
+```
+
+會發現 print("I am here") 這行程式碼完全沒執行到  
+且印出的型別為 () -> AttributedString  
+它是一個函式型別
+
