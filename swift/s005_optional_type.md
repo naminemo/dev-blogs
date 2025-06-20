@@ -67,8 +67,7 @@ if 帶有驚嘆號的變數 {
 }
 ```
 
-
-###  猜猜什麼型別?
+### 猜猜什麼型別?
 
 ```swift
 let myConstant = Int(42)
@@ -101,12 +100,6 @@ print(type(of: myConstant))
 print(myConstant!)
 // Fatal error: Unexpectedly found nil while unwrapping an Optional value
 ```
-
-
-
-
-
-
 
 ```swift
 func divide(_ number: Int, by divisor: Int) -> Int? {

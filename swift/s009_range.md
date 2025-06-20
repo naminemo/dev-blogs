@@ -1,4 +1,4 @@
-#### half-open range (open upper-bound)
+# half-open range (open upper-bound)
 
 使用 ..< 來決定 indexes 的範圍
 

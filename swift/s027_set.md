@@ -1,5 +1,6 @@
+# Set
 
-在 Array 中，它能由字面量來型別推斷
+在 Array 中，它能由字面量來型別推斷  
 例如
 
 ```swift
@@ -16,9 +17,6 @@ var set: Set = ["a", "b", "c"]
 print(type(of: set))
 // Print: Set<String>
 ```
-
-
-
 
 在 Array、Set、Dictionary 中
 Dictionary 和 Set 都必須遵循 Hashable 協定，但 Array 並不要求遵循 Hashable 協定。

@@ -1,4 +1,4 @@
-#### functions
+# functions
 
 ```swift
 func greet(person: String, day: String) -> String {
@@ -12,8 +12,7 @@ greet(person: "Bob", day: "Tuesday")
 函式的回傳是沒有名字的，只有 Type
 像上面這個例子就是回傳 String Type
 
-
-#### argument label
+## argument label
 
 ```swift
 func greet(_ person: String, on day: String) -> String {
@@ -26,7 +25,7 @@ greet("John", on: "Wednesday")\
 不想鍵入 parameter names 在前面加入 _
 想客製  argument label 就加入自己的命名
 
-####  return multiple values from a function
+## return multiple values from a function
 
 ```swift
 func calculateStatistics(scores: [Int]) -> (min: Int, max: Int, sum: Int) {
@@ -54,8 +53,8 @@ print(statistics.2)
 // Prints "120"
 ```
 
+## nested function
 
-#### nested function
 ```swift
 func returnFifteen() -> Int {
     var y = 10

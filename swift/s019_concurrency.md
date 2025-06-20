@@ -1,6 +1,7 @@
 ## Concurrency
 
 ### async
+
 ```swift
 func fetchUserID(from server: String) async -> Int {
 
@@ -11,7 +12,6 @@ func fetchUserID(from server: String) async -> Int {
     return 501
 }
 ```
-
 
 ### await
 
@@ -27,7 +27,6 @@ func fetchUsername(from server: String) async -> String {
 }
 
 ```
-
 
 ### async let
 

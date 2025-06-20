@@ -35,12 +35,12 @@ raw value 為 Int 時，若未指定起算值，預設為從 0 開始；有自�
 
 
 ### Failable Initializer
+
 ```swift
 if let convertedRank = Rank(rawValue: 3) {
     let threeDescription = convertedRank.simpleDescription()
 }
 ```
-
 
 ### without raw value
 
@@ -69,8 +69,8 @@ let hearts = Suit.hearts
 let heartsDescription = hearts.simpleDescription()
 ```
 
+### values associated with the case
 
-### values associated with the cas
 ```swift
 enum ServerResponse {
     case result(String, String) 

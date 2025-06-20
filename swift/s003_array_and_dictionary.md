@@ -12,8 +12,8 @@ occupations["Jayne"] = "Public Relations"
 
 ```
 
-
 #### add elements
+
 ```swift
 fruits.append("blueberries")
 print(fruits)
@@ -21,20 +21,22 @@ print(fruits)
 ```
 
 ####  empty array or dictionary
+
 ```swift
 fruits = []
 occupations = [:]
 ```
 
 #### an empty array or dictionary to a new variable
+
 ```swift
 let emptyArray: [String] = []
 let emptyDictionary: [String: Float] = [:]
 
 ```
 
-
 ### for-in loop
+
 ```swift
 var fruits = ["strawberries", "limes", "tangerines"]
 

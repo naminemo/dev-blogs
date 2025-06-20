@@ -1,6 +1,7 @@
 
 
 ### class
+
 ```swift
 // 宣告 Shape 類別
 class Shape {
@@ -17,6 +18,7 @@ class Shape {
 ```
 
 ### create an instance
+
 ```swift
 var shape = Shape()
 shape.numberOfSides = 7
@@ -24,6 +26,7 @@ var shapeDescription = shape.simpleDescription()
 ```
  
  ### use init to create an initializer
+
  ```swift
 class NamedShape {
 
@@ -39,10 +42,12 @@ class NamedShape {
     }
 }
  ```
+
 由於屬性 name 並沒有給初始值，這在開發上會出錯，可在初始化方法上完成賦予初始值。
 並且注意到是如何使用 self 來區分傳入的 argument 帶到 property。
 
 ### deinit
+
 ```swift
 class NamedShape {
 
@@ -70,7 +75,5 @@ namedShape = nil
 ```
 
 #### give it a shot
+
 若把上面 namedShape 的 type annotation 拿掉，會有什麼變化?
-
-
-

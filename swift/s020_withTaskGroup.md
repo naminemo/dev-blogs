@@ -1,4 +1,4 @@
-### withTaskGroup
+# withTaskGroup
 
 ```swift
 let userIDs = await withTaskGroup(of: Int.self) { group in

@@ -1,4 +1,6 @@
 
+# Properties
+
 ```swift
 class NamedShape {
 
@@ -15,8 +17,8 @@ class NamedShape {
 }
 ```
 
+## getter and setter (compute the property)
 
-### getter and setter (compute the property)
 ```swift
 class EquilateralTriangle: NamedShape {
     
@@ -64,8 +66,8 @@ print(triangle.sideLength)
 // Prints "3.3000000000000003"
 ```
 
-
 ### Property Observer
+
 ```swift
 // 下面的類別確保了其三角形的邊長始終與其正方形的邊長相同。
 // 定義"三角形與正方形"類別
@@ -101,5 +103,3 @@ print(triangleAndSquare.triangle.sideLength)
 // Prints "50.0"
 
 ```
-
-

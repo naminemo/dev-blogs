@@ -1,5 +1,6 @@
+# 向下轉型
 
-
+## 先來看個範
 
 ```swift
 let ages: [Any] = ["Amy", 18, "Sam", 22, "Jim", 19]
@@ -16,14 +17,15 @@ for item in ages {
 print(result)
 ```
 
-### Type Checking
+## Type Checking
+
 在 if item is String 這段程式碼中  
-is 運算符是一個型別檢查(Type Checking)   
+is 運算符是一個型別檢查(Type Checking)  
 也就是說，它只檢查是不是這種型別，然後回傳 true 或 false
 
+## Optional Downcasting / Conditional Downcasting
 
-### Optional Downcasting / Conditional Downcasting
-#### as? (可選向下轉型 / 條件向下轉型)
+### as? (可選向下轉型 / 條件向下轉型)
 
 在 Swift 中，as? 運算符用於可選向下轉型 (Optional Downcasting)，也稱為條件向下轉型 (Conditional Downcasting)。  
 它會嘗試將一個類型的實例轉型成一個更具體的類型。  
@@ -33,13 +35,10 @@ is 運算符是一個型別檢查(Type Checking)
 
 as? 是一種"安全"的嘗試轉型方式，因為即使轉型無效，它也不會導致程式崩潰。
 
+## 區分 as? 和 as!
 
-
-### 區分 as? 和 as! 
-
- - as? (可選向下轉型)： 安全。返回一個可選值。失敗時返回 nil。
- - as! (強制向下轉型)： 不安全。強制進行向下轉型。如果轉型失敗，會觸發執行時錯誤 (Runtime Error) (導致你的應用程式崩潰)。只有在你百分之百確定向下轉型會成功時，才應該使用 as!。
-
+- as? (可選向下轉型)： 安全。返回一個可選值。失敗時返回 nil。
+- as! (強制向下轉型)： 不安全。強制進行向下轉型。如果轉型失敗，會觸發執行時錯誤 (Runtime Error) (導致你的應用程式崩潰)。只有在你百分之百確定向下轉型會成功時，才應該使用 as!。
 
 使用 as! 的範例 (除非你百分之百確定，否則請勿這樣做！)：
 
@@ -53,7 +52,6 @@ let anotherValue: Any = "Hello"
 ```
 
 總之，當你不確定轉換是否會成功時，as? 是你安全地嘗試將實例轉換為更具體類型的首選運算符。
-
 
 ### 練習
 
@@ -76,9 +74,9 @@ for item in ages {
 }
 print(result)
 ```
+
 目前這樣是不會出錯的，因為跑到 else 裡的剛好都是 Int 型別
 不過如果把數字 18 改成 18.5 就會出錯了
-
 
 ```swift
 import Foundation

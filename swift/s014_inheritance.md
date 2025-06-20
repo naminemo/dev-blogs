@@ -1,4 +1,8 @@
- ```swift
+# inheritance
+
+先來給一個父類別
+
+```swift
 class NamedShape {
 
     var numberOfSides: Int = 0
@@ -14,7 +18,8 @@ class NamedShape {
 }
  ```
 
-### inheritance
+## 如何表達繼承
+
 ```swift
 class Square: NamedShape {
 
@@ -41,7 +46,8 @@ test.area()
 test.simpleDescription()
 ```
 
-#### think it
+### think it
+
 ```swift
     init(sideLength: Double, name: String) {
         self.sideLength = sideLength
@@ -49,6 +55,5 @@ test.simpleDescription()
         numberOfSides = 4
     }
 ```
+
 是否能在此 initializer 中，任意對調程式碼的執行順序?
-
-

@@ -1,4 +1,5 @@
-### protocol
+# protocol
+
 ```swift
 protocol ExampleProtocol {
      var simpleDescription: String { get }
@@ -28,4 +29,3 @@ var b = SimpleStructure()
 b.adjust()
 let bDescription = b.simpleDescription
 ```
-

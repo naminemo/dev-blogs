@@ -1,4 +1,5 @@
-### dictionary
+# dictionary
+
 ```swift
 var words: [String:Int] = ["A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6]
 words["X"] = 1 
@@ -25,7 +26,8 @@ print(airports)
 // ["DUB": "Dublin"]
 ```
 
-#### 快速把鍵或值轉成陣列
+## 快速把鍵或值轉成陣列
+
 ```swift
 var airports: [String: String] = ["YYZ": "Toronto Pearson", "DUB": "Dublin"]
 let airportCodes = [String](airports.keys)

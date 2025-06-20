@@ -142,6 +142,7 @@ print(removedFruit)
 #### 新增資料(2)
 
 新增一筆元素資料
+
 ```swift
 var values: [Any] = [1, "a"]
 values.append([2, 3, "b"])
@@ -150,6 +151,7 @@ print(values)
 ```
 
 新增多筆元素資料
+
 ```swift
 var values: [Any] = [1, "a"]
 values.append(contentsOf: [2, 3, "b"])
