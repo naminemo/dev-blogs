@@ -99,9 +99,9 @@ struct SwiftUIView: View {
 // I am here
 // AttributedString
 ```
+
 可以看到 AttributedString 的型別為 AttributedString
 且 print("I am here") 這行程式碼有被執行到
-
 
 ## 去掉小括號 ()
 
@@ -138,4 +138,3 @@ struct SwiftUIView: View {
 會發現 print("I am here") 這行程式碼完全沒執行到  
 且印出的型別為 () -> AttributedString  
 它是一個函式型別
-
