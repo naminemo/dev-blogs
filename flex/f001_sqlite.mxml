@@ -1,0 +1,892 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   creationComplete="init(event)"
+					   width="900" height="700"
+					   title="學生管理系統">
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.data.SQLConnection;
+			import flash.data.SQLStatement;
+			import flash.data.SQLResult;
+			import flash.events.SQLEvent;
+			import flash.events.SQLErrorEvent;
+			import flash.filesystem.File;
+			import mx.events.FlexEvent;
+			import spark.components.Alert;
+			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			
+			private var conn:SQLConnection;
+			private var dbFile:File;
+			private var isEditMode:Boolean = false;
+			private var editingStudentId:int = -1;
+			private var currentDBVersion:int = 1; // 當前資料庫版本
+			
+			protected function init(event:FlexEvent):void
+			{
+				// 初始化資料庫連線
+				conn = new SQLConnection();
+				
+				// 設定資料庫檔案路徑 (放在應用程式目錄下)
+				dbFile = File.applicationStorageDirectory.resolvePath("mydb.db");
+				
+				// 顯示資料庫檔案的完整路徑
+				dbPathLabel.text = "資料庫位置: " + dbFile.nativePath;
+				
+				trace(dbFile.nativePath)
+				
+				// 開啟或建立資料庫
+				openDatabase();
+				
+				// 初始化界面
+				clearForm();
+			}
+			
+			private function openDatabase():void
+			{
+				conn.addEventListener(SQLEvent.OPEN, onDatabaseOpen);
+				conn.addEventListener(SQLErrorEvent.ERROR, onDatabaseError);
+				
+				try {
+					// 檢查資料庫檔案是否存在
+					if (dbFile.exists) {
+						statusLabel.text = "正在開啟現有資料庫...";
+						conn.open(dbFile);
+					} else {
+						statusLabel.text = "正在建立新資料庫...";
+						conn.open(dbFile);
+					}
+				} catch (error:Error) {
+					spark.components.Alert.show("開啟資料庫時發生錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onDatabaseOpen(event:SQLEvent):void
+			{
+				statusLabel.text = "資料庫連線成功！";
+				
+				// 建立學生資料表 (如果不存在的話)
+				createStudentTable();
+			}
+			
+			private function onDatabaseError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("資料庫錯誤: " + event.error.message, "錯誤");
+				statusLabel.text = "資料庫連線失敗";
+			}
+			
+			private function createStudentTable():void
+			{
+				// 先建立或檢查版本管理表
+				createVersionTable();
+			}
+			
+			private function createVersionTable():void
+			{
+				var createVersionTableSQL:String = 
+					"CREATE TABLE IF NOT EXISTS db_version (" +
+					"version INTEGER PRIMARY KEY" +
+					")";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = createVersionTableSQL;
+				
+				statement.addEventListener(SQLEvent.RESULT, onVersionTableCreated);
+				statement.addEventListener(SQLErrorEvent.ERROR, onVersionTableError);
+				
+				try {
+					statement.execute();
+				} catch (error:Error) {
+					spark.components.Alert.show("建立版本管理表時發生錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onVersionTableCreated(event:SQLEvent):void
+			{
+				// 檢查當前資料庫版本
+				checkDatabaseVersion();
+			}
+			
+			private function onVersionTableError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("建立版本管理表錯誤: " + event.error.message, "錯誤");
+			}
+			
+			private function checkDatabaseVersion():void
+			{
+				var checkVersionSQL:String = "SELECT version FROM db_version ORDER BY version DESC LIMIT 1";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = checkVersionSQL;
+				
+				statement.addEventListener(SQLEvent.RESULT, onVersionChecked);
+				statement.addEventListener(SQLErrorEvent.ERROR, onVersionCheckError);
+				
+				try {
+					statement.execute();
+				} catch (error:Error) {
+					spark.components.Alert.show("檢查資料庫版本時發生錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onVersionChecked(event:SQLEvent):void
+			{
+				var result:SQLResult = event.target.getResult();
+				var dbVersion:int = 0;
+				
+				if (result.data != null && result.data.length > 0) {
+					dbVersion = result.data[0].version;
+				}
+				
+				statusLabel.text = "檢測到資料庫版本: " + dbVersion + "，目標版本: " + currentDBVersion;
+				
+				if (dbVersion < currentDBVersion) {
+					// 需要執行 migration
+					performMigration(dbVersion);
+				} else {
+					// 版本已是最新，直接建立基本表格
+					createStudentTableStructure();
+				}
+			}
+			
+			private function onVersionCheckError(event:SQLErrorEvent):void
+			{
+				// 可能是第一次建立，從版本 0 開始
+				statusLabel.text = "首次建立資料庫，從版本 0 開始升級到版本 " + currentDBVersion;
+				performMigration(0);
+			}
+			
+			private function performMigration(fromVersion:int):void
+			{
+				statusLabel.text = "正在執行資料庫升級 (從版本 " + fromVersion + " 到版本 " + currentDBVersion + ")...";
+				
+				// 執行各個版本的升級
+				if (fromVersion < 1) {
+					// 升級到版本 1: 建立基本的學生表格
+					migrateToVersion1();
+				}
+				
+				// 未來可以在這裡添加更多版本的升級
+				// if (fromVersion < 2) {
+				//     migrateToVersion2();
+				// }
+			}
+			
+			private function migrateToVersion1():void
+			{
+				var createTableSQL:String = 
+					"CREATE TABLE IF NOT EXISTS student (" +
+					"id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+					"name TEXT NOT NULL, " +
+					"student_id INTEGER NOT NULL UNIQUE, " +
+					"gender TEXT DEFAULT '未指定'" +  // 新增性別欄位，預設值為'未指定'
+					")";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = createTableSQL;
+				
+				statement.addEventListener(SQLEvent.RESULT, onMigrationToV1Complete);
+				statement.addEventListener(SQLErrorEvent.ERROR, onMigrationError);
+				
+				try {
+					statement.execute();
+				} catch (error:Error) {
+					spark.components.Alert.show("執行 Migration 到版本 1 時發生錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onMigrationToV1Complete(event:SQLEvent):void
+			{
+				// 檢查是否需要新增 gender 欄位到現有表格
+				checkAndAddGenderColumn();
+			}
+			
+			private function checkAndAddGenderColumn():void
+			{
+				// 先檢查 gender 欄位是否已存在
+				var checkColumnSQL:String = "PRAGMA table_info(student)";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = checkColumnSQL;
+				
+				statement.addEventListener(SQLEvent.RESULT, onTableInfoChecked);
+				statement.addEventListener(SQLErrorEvent.ERROR, onCheckColumnError);
+				
+				try {
+					statement.execute();
+				} catch (error:Error) {
+					spark.components.Alert.show("檢查表格結構時發生錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onTableInfoChecked(event:SQLEvent):void
+			{
+				var result:SQLResult = event.target.getResult();
+				var hasGenderColumn:Boolean = false;
+				
+				if (result.data != null) {
+					for each (var column:Object in result.data) {
+						if (column.name == "gender") {
+							hasGenderColumn = true;
+							break;
+						}
+					}
+				}
+				
+				if (!hasGenderColumn) {
+					// 需要新增 gender 欄位
+					addGenderColumn();
+				} else {
+					// 欄位已存在，完成版本 1 的升級
+					updateDatabaseVersion(1);
+				}
+			}
+			
+			private function onCheckColumnError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("檢查欄位錯誤: " + event.error.message, "錯誤");
+			}
+			
+			private function addGenderColumn():void
+			{
+				var addColumnSQL:String = "ALTER TABLE student ADD COLUMN gender TEXT DEFAULT '未指定'";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = addColumnSQL;
+				
+				statement.addEventListener(SQLEvent.RESULT, onGenderColumnAdded);
+				statement.addEventListener(SQLErrorEvent.ERROR, onAddColumnError);
+				
+				try {
+					statement.execute();
+				} catch (error:Error) {
+					spark.components.Alert.show("新增 gender 欄位時發生錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onGenderColumnAdded(event:SQLEvent):void
+			{
+				statusLabel.text = "成功新增 gender 欄位";
+				updateDatabaseVersion(1);
+			}
+			
+			private function onAddColumnError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("新增欄位錯誤: " + event.error.message, "錯誤");
+			}
+			
+			private function updateDatabaseVersion(version:int):void
+			{
+				var updateVersionSQL:String = "INSERT OR REPLACE INTO db_version (version) VALUES (?)";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = updateVersionSQL;
+				statement.parameters[0] = version;
+				
+				statement.addEventListener(SQLEvent.RESULT, onVersionUpdated);
+				statement.addEventListener(SQLErrorEvent.ERROR, onVersionUpdateError);
+				
+				try {
+					statement.execute();
+				} catch (error:Error) {
+					spark.components.Alert.show("更新資料庫版本時發生錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onVersionUpdated(event:SQLEvent):void
+			{
+				statusLabel.text = "資料庫升級完成，當前版本: 1";
+				onTableCreated(null); // 繼續原本的流程
+			}
+			
+			private function onVersionUpdateError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("更新版本號錯誤: " + event.error.message, "錯誤");
+			}
+			
+			private function onMigrationError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("Migration 執行錯誤: " + event.error.message, "錯誤");
+			}
+			
+			private function createStudentTableStructure():void
+			{
+				// 這個函數用於新資料庫的建立（版本已經是最新）
+				onTableCreated(null);
+			}
+			
+			private function onTableCreated(event:SQLEvent):void
+			{
+				statusLabel.text = "學生資料表已準備就緒";
+				
+				// 檢查資料表中是否有資料
+				checkExistingData();
+			}
+			
+			private function onTableError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("建立資料表錯誤: " + event.error.message, "錯誤");
+			}
+			
+			private function checkExistingData():void
+			{
+				var selectSQL:String = "SELECT COUNT(*) as count FROM student";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = selectSQL;
+				
+				statement.addEventListener(SQLEvent.RESULT, onDataChecked);
+				statement.addEventListener(SQLErrorEvent.ERROR, onCheckError);
+				
+				try {
+					statement.execute();
+				} catch (error:Error) {
+					spark.components.Alert.show("檢查資料時發生錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onDataChecked(event:SQLEvent):void
+			{
+				var result:SQLResult = event.target.getResult();
+				var count:int = result.data[0].count;
+				
+				if (count == 0) {
+					statusLabel.text = "資料庫已準備就緒 (無現有資料)";
+					// 可以在這裡插入一些示例資料
+					insertSampleData();
+				} else {
+					statusLabel.text = "資料庫已準備就緒 (包含 " + count + " 筆學生資料)";
+					loadStudentData();
+				}
+			}
+			
+			private function onCheckError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("檢查資料錯誤: " + event.error.message, "錯誤");
+			}
+			
+			// 插入示例資料 (可選)
+			private function insertSampleData():void
+			{
+				var insertSQL:String = "INSERT INTO student (name, student_id) VALUES (?, ?)";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = insertSQL;
+				
+				// 插入示例學生資料
+				var sampleStudents:Array = [
+					{name: "張小明", student_id: "A001"},
+					{name: "李小華", student_id: "A002"},
+					{name: "王小美", student_id: "A003"}
+				];
+				
+				for each (var student:Object in sampleStudents) {
+					statement.parameters[0] = student.name;
+					statement.parameters[1] = student.student_id;
+					
+					try {
+						statement.execute();
+					} catch (error:Error) {
+						trace("插入示例資料錯誤: " + error.message);
+					}
+				}
+				
+				statusLabel.text = "已插入示例學生資料";
+				loadStudentData();
+			}
+			
+			// 載入學生資料到界面
+			private function loadStudentData():void
+			{
+				var selectSQL:String = "SELECT * FROM student ORDER BY student_id";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = selectSQL;
+				
+				statement.addEventListener(SQLEvent.RESULT, onStudentDataLoaded);
+				statement.addEventListener(SQLErrorEvent.ERROR, onLoadDataError);
+				
+				try {
+					statement.execute();
+				} catch (error:Error) {
+					spark.components.Alert.show("載入學生資料錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onStudentDataLoaded(event:SQLEvent):void
+			{
+				var result:SQLResult = event.target.getResult();
+				
+				if (result.data != null) {
+					// 將資料包裝成 ArrayCollection 給 Spark DataGrid 使用
+					var studentData:ArrayCollection = new ArrayCollection(result.data);
+					studentDataGrid.dataProvider = studentData;
+					statusLabel.text = "已載入 " + result.data.length + " 筆學生資料";
+				} else {
+					// 如果沒有資料，設定空的 ArrayCollection
+					studentDataGrid.dataProvider = new ArrayCollection();
+					statusLabel.text = "沒有學生資料";
+				}
+			}
+			
+			private function onLoadDataError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("載入資料錯誤: " + event.error.message, "錯誤");
+			}
+			
+			// 字串去除空白的輔助函數
+			private function trimString(str:String):String
+			{
+				if (str == null) return "";
+				// 去除前後空白
+				return str.replace(/^\s+|\s+$/g, "");
+			}
+			
+			// 新增學生
+			private function addStudent():void
+			{
+				var name:String = trimString(nameInput.text);
+				var studentId:String = trimString(studentIdInput.text);
+				var gender:String = genderDropDown.selectedItem ? genderDropDown.selectedItem.toString() : "未指定";
+				
+				// 驗證輸入
+				if (name == "" || studentId == "") {
+					spark.components.Alert.show("請填寫完整的學生姓名和學號", "輸入錯誤");
+					return;
+				}
+				
+				if (isEditMode) {
+					// 編輯模式
+					updateStudent();
+					return;
+				}
+				
+				// 新增模式
+				var insertSQL:String = "INSERT INTO student (name, student_id, gender) VALUES (?, ?, ?)";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = insertSQL;
+				statement.parameters[0] = name;
+				statement.parameters[1] = studentId;
+				statement.parameters[2] = gender;
+				
+				statement.addEventListener(SQLEvent.RESULT, onStudentAdded);
+				statement.addEventListener(SQLErrorEvent.ERROR, onAddStudentError);
+				
+				try {
+					statement.execute();
+				} catch (error:Error) {
+					spark.components.Alert.show("新增學生時發生錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onStudentAdded(event:SQLEvent):void
+			{
+				spark.components.Alert.show("學生資料新增成功！", "成功");
+				clearForm();
+				loadStudentData();
+			}
+			
+			private function onAddStudentError(event:SQLErrorEvent):void
+			{
+				var errorMsg:String = event.error.message;
+				if (errorMsg.indexOf("UNIQUE constraint failed") >= 0) {
+					spark.components.Alert.show("學號已存在，請使用不同的學號", "新增失敗");
+				} else {
+					spark.components.Alert.show("新增學生失敗: " + errorMsg, "錯誤");
+				}
+			}
+			
+			// 編輯學生
+			private function editStudent():void
+			{
+				var selectedItem:Object = studentDataGrid.selectedItem;
+				if (selectedItem == null) {
+					spark.components.Alert.show("請選擇要編輯的學生", "選擇錯誤");
+					return;
+				}
+				
+				// 設定編輯模式
+				isEditMode = true;
+				editingStudentId = selectedItem.id;
+				
+				// 填入表單
+				nameInput.text = selectedItem.name;
+				studentIdInput.text = selectedItem.student_id;
+				
+				// 設定性別下拉選單
+				var gender:String = selectedItem.gender || "未指定";
+				for (var i:int = 0; i < genderDropDown.dataProvider.length; i++) {
+					if (genderDropDown.dataProvider.getItemAt(i) == gender) {
+						genderDropDown.selectedIndex = i;
+						break;
+					}
+				}
+				
+				// 更新按鈕文字
+				addButton.label = "更新";
+				cancelButton.visible = true;
+				
+				statusLabel.text = "編輯模式 - 修改學生資料";
+			}
+			
+			// 更新學生資料
+			private function updateStudent():void
+			{
+				var name:String = trimString(nameInput.text);
+				var studentId:String = trimString(studentIdInput.text);
+				var gender:String = genderDropDown.selectedItem ? genderDropDown.selectedItem.toString() : "未指定";
+				
+				var updateSQL:String = "UPDATE student SET name = ?, student_id = ?, gender = ? WHERE id = ?";
+				
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = updateSQL;
+				statement.parameters[0] = name;
+				statement.parameters[1] = studentId;
+				statement.parameters[2] = gender;
+				statement.parameters[3] = editingStudentId;
+				
+				statement.addEventListener(SQLEvent.RESULT, onStudentUpdated);
+				statement.addEventListener(SQLErrorEvent.ERROR, onUpdateStudentError);
+				
+				try {
+					statement.execute();
+				} catch (error:Error) {
+					spark.components.Alert.show("更新學生資料時發生錯誤: " + error.message, "錯誤");
+				}
+			}
+			
+			private function onStudentUpdated(event:SQLEvent):void
+			{
+				spark.components.Alert.show("學生資料更新成功！", "成功");
+				clearForm();
+				loadStudentData();
+			}
+			
+			private function onUpdateStudentError(event:SQLErrorEvent):void
+			{
+				var errorMsg:String = event.error.message;
+				if (errorMsg.indexOf("UNIQUE constraint failed") >= 0) {
+					spark.components.Alert.show("學號已存在，請使用不同的學號", "更新失敗");
+				} else {
+					spark.components.Alert.show("更新學生資料失敗: " + errorMsg, "錯誤");
+				}
+			}
+			
+			// 刪除學生
+			private function deleteStudent():void
+			{
+				var selectedItem:Object = studentDataGrid.selectedItem;
+				if (selectedItem == null) {
+					spark.components.Alert.show("請選擇要刪除的學生", "選擇錯誤");
+					return;
+				}
+				
+				// 確認刪除
+				var confirmMsg:String = "確定要刪除學生 '" + selectedItem.name + "' (學號: " + selectedItem.student_id + ") 嗎？";
+				spark.components.Alert.show(confirmMsg, "確認刪除", 
+					spark.components.Alert.YES | spark.components.Alert.NO,
+					null, onDeleteConfirm);
+			}
+			
+			private function onDeleteConfirm(event:CloseEvent):void
+			{
+				if (event.detail == spark.components.Alert.YES) {
+					var selectedItem:Object = studentDataGrid.selectedItem;
+					var deleteSQL:String = "DELETE FROM student WHERE id = ?";
+					
+					var statement:SQLStatement = new SQLStatement();
+					statement.sqlConnection = conn;
+					statement.text = deleteSQL;
+					statement.parameters[0] = selectedItem.id;
+					
+					statement.addEventListener(SQLEvent.RESULT, onStudentDeleted);
+					statement.addEventListener(SQLErrorEvent.ERROR, onDeleteStudentError);
+					
+					try {
+						statement.execute();
+					} catch (error:Error) {
+						spark.components.Alert.show("刪除學生時發生錯誤: " + error.message, "錯誤");
+					}
+				}
+			}
+			
+			private function onStudentDeleted(event:SQLEvent):void
+			{
+				spark.components.Alert.show("學生資料刪除成功！", "成功");
+				clearForm();
+				loadStudentData();
+			}
+			
+			private function onDeleteStudentError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("刪除學生失敗: " + event.error.message, "錯誤");
+			}
+			
+			// 取消編輯
+			private function cancelEdit():void
+			{
+				clearForm();
+			}
+			
+			// 清空表單
+			private function clearForm():void
+			{
+				nameInput.text = "";
+				studentIdInput.text = "";
+				genderDropDown.selectedIndex = 0; // 預設選擇第一個選項
+				isEditMode = false;
+				editingStudentId = -1;
+				addButton.label = "新增";
+				cancelButton.visible = false;
+				
+				if (statusLabel.text.indexOf("編輯模式") >= 0) {
+					statusLabel.text = "準備就緒";
+				}
+			}
+			
+			// 開啟資料庫檔案所在位置
+			private function openDatabaseLocation():void
+			{
+				try {
+					var parentDirectory:File = dbFile.parent;
+					parentDirectory.openWithDefaultApplication();
+				} catch (error:Error) {
+					spark.components.Alert.show("無法開啟資料庫位置: " + error.message, "錯誤");
+				}
+			}
+			
+			// 快速寫入測試資料
+			private function insertTestData():void
+			{
+				if (!conn || !conn.connected) {
+					spark.components.Alert.show("資料庫連線尚未準備就緒", "錯誤");
+					return;
+				}
+				
+				var insertSQL:String = "INSERT INTO student (name, student_id, gender) VALUES (?, ?, ?)";
+				var statement:SQLStatement = new SQLStatement();
+				statement.sqlConnection = conn;
+				statement.text = insertSQL;
+				
+				// 準備測試資料（包含性別）
+				var testStudents:Array = [
+					{name: "陳大明", student_id: "B001", gender: "男"},
+					{name: "林小雅", student_id: "B002", gender: "女"},
+					{name: "黃志豪", student_id: "B003", gender: "男"}
+				];
+				
+				var successCount:int = 0;
+				var totalCount:int = testStudents.length;
+				
+				for each (var student:Object in testStudents) {
+					statement.parameters[0] = student.name;
+					statement.parameters[1] = student.student_id;
+					statement.parameters[2] = student.gender;
+					
+					try {
+						statement.execute();
+						successCount++;
+					} catch (error:Error) {
+						trace("插入測試資料錯誤: " + error.message);
+						// 如果是重複學號錯誤，繼續處理下一筆
+						if (error.message.indexOf("UNIQUE constraint failed") < 0) {
+							spark.components.Alert.show("插入測試資料時發生錯誤: " + error.message, "錯誤");
+						}
+					}
+				}
+				
+				if (successCount > 0) {
+					spark.components.Alert.show("成功寫入 " + successCount + " 筆測試資料", "完成");
+					loadStudentData(); // 重新載入資料
+				} else {
+					spark.components.Alert.show("沒有新資料被寫入（可能學號已存在）", "提示");
+				}
+			}
+			
+			// 清空學生資料表
+			private function clearAllStudentData():void
+			{
+				if (!conn || !conn.connected) {
+					spark.components.Alert.show("資料庫連線尚未準備就緒", "錯誤");
+					return;
+				}
+				
+				// 確認清空
+				var confirmMsg:String = "警告：此操作將會清空所有學生資料，且無法復原！\n\n確定要繼續嗎？";
+				spark.components.Alert.show(confirmMsg, "確認清空所有資料", 
+					spark.components.Alert.YES | spark.components.Alert.NO,
+					null, onClearAllConfirm);
+			}
+			
+			private function onClearAllConfirm(event:CloseEvent):void
+			{
+				if (event.detail == spark.components.Alert.YES) {
+					var deleteAllSQL:String = "DELETE FROM student";
+					
+					var statement:SQLStatement = new SQLStatement();
+					statement.sqlConnection = conn;
+					statement.text = deleteAllSQL;
+					
+					statement.addEventListener(SQLEvent.RESULT, onAllDataCleared);
+					statement.addEventListener(SQLErrorEvent.ERROR, onClearAllError);
+					
+					try {
+						statement.execute();
+					} catch (error:Error) {
+						spark.components.Alert.show("清空資料時發生錯誤: " + error.message, "錯誤");
+					}
+				}
+			}
+			
+			private function onAllDataCleared(event:SQLEvent):void
+			{
+				spark.components.Alert.show("所有學生資料已清空", "完成");
+				clearForm(); // 清空表單
+				loadStudentData(); // 重新載入資料（應該是空的）
+				statusLabel.text = "資料表已清空";
+			}
+			
+			private function onClearAllError(event:SQLErrorEvent):void
+			{
+				spark.components.Alert.show("清空資料失敗: " + event.error.message, "錯誤");
+			}
+			
+			// 關閉應用程式時關閉資料庫連線
+			private function onAppClosing():void
+			{
+				if (conn && conn.connected) {
+					conn.close();
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- 在這裡可以定義其他元件 -->
+	</fx:Declarations>
+	
+	<s:VGroup width="100%" height="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10">
+		
+		<!-- 標題 -->
+		<s:Label text="學生管理系統" fontSize="24" fontWeight="bold" horizontalCenter="0"/>
+		
+		<!-- 狀態顯示 -->
+		<s:Label id="statusLabel" text="正在初始化..." fontSize="14" color="#666666"/>
+		
+		<!-- 資料庫路徑顯示 -->
+		<s:Label id="dbPathLabel" text="資料庫位置: 載入中..." fontSize="12" color="#999999" maxWidth="850" />
+		
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke color="#CCCCCC" weight="1"/>
+			</s:stroke>
+		</s:Line>
+		
+		<!-- 學生資料表格 -->
+		<s:Label text="學生資料列表:" fontSize="16" fontWeight="bold"/>
+		
+		<s:HGroup width="100%" height="450">
+			<s:DataGrid id="studentDataGrid" 
+						width="100%" 
+						height="100%"
+						alternatingRowColors="[0xFFFFFF, 0xF0F0F0]"
+						requestedRowCount="15">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="id" headerText="ID" width="60"/>
+						<s:GridColumn dataField="name" headerText="姓名" width="120"/>
+						<s:GridColumn dataField="student_id" headerText="學號" width="100"/>
+						<s:GridColumn dataField="gender" headerText="性別" width="80"/>
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+			
+			<s:VGroup width="280" height="100%" paddingLeft="10">
+				<s:Label text="學生資料輸入" fontSize="14" fontWeight="bold"/>
+				
+				<s:Line width="100%">
+					<s:stroke>
+						<s:SolidColorStroke color="#CCCCCC" weight="1"/>
+					</s:stroke>
+				</s:Line>
+				
+				<!-- 姓名輸入 -->
+				<s:HGroup width="100%" verticalAlign="middle">
+					<s:Label text="姓名:" width="50"/>
+					<s:TextInput id="nameInput" width="200"/>
+				</s:HGroup>
+				
+				<!-- 學號輸入 -->
+				<s:HGroup width="100%" verticalAlign="middle">
+					<s:Label text="學號:" width="50"/>
+					<s:TextInput id="studentIdInput" width="200"/>
+				</s:HGroup>
+				
+				<!-- 性別選擇 -->
+				<s:HGroup width="100%" verticalAlign="middle">
+					<s:Label text="性別:" width="50"/>
+					<s:DropDownList id="genderDropDown" width="200">
+						<s:dataProvider>
+							<s:ArrayList>
+								<fx:String>未指定</fx:String>
+								<fx:String>男</fx:String>
+								<fx:String>女</fx:String>
+							</s:ArrayList>
+						</s:dataProvider>
+					</s:DropDownList>
+				</s:HGroup>
+				
+				<s:Spacer height="10"/>
+				
+				<!-- 操作按鈕 -->
+				<s:VGroup width="100%" gap="5">
+					<s:Button id="addButton" label="新增" width="100%" click="addStudent()"/>
+					<s:Button id="cancelButton" label="取消" width="100%" click="cancelEdit()" visible="false"/>
+					
+					<s:Line width="100%">
+						<s:stroke>
+							<s:SolidColorStroke color="#CCCCCC" weight="1"/>
+						</s:stroke>
+					</s:Line>
+					
+					<s:Button label="編輯" width="100%" click="editStudent()"/>
+					<s:Button label="刪除" width="100%" click="deleteStudent()"/>
+					
+					<s:Line width="100%">
+						<s:stroke>
+							<s:SolidColorStroke color="#CCCCCC" weight="1"/>
+						</s:stroke>
+					</s:Line>
+					
+					<s:Button label="重新載入" width="100%" click="loadStudentData()"/>
+					<s:Button label="清空表單" width="100%" click="clearForm()"/>
+				</s:VGroup>
+			</s:VGroup>
+		</s:HGroup>
+		
+		<s:Spacer height="10"/>
+		
+		<s:HGroup gap="10">
+			<s:Button label="開啟資料庫位置" click="openDatabaseLocation()"/>
+			<s:Button label="寫入資料" click="insertTestData()"/>
+			<s:Button label="清空學生資料" click="clearAllStudentData()"/>
+		</s:HGroup>
+		
+	</s:VGroup>
+	
+</s:WindowedApplication>
