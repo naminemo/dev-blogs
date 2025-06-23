@@ -621,44 +621,26 @@ struct ContentView: View {
 struct StudentRowView: View {
     let student: Student
     let isSelected: Bool
-    
+
+    let columns: [GridItem] = Array(repeating: GridItem(.flexible(minimum: 60), spacing: 1), count: 4)
+
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(student.name)
-                    .font(.headline)
-                    .foregroundStyle(isSelected ? .white : .primary)
-                
-                HStack {
-                    
-                    Text("ID: \(student.id)")
-                        .font(.caption2)
-                        .foregroundStyle(isSelected ? .white.opacity(0.6) : .secondary)
-                    
-                    Text("姓名: \(student.name)")
-                        .font(.caption)
-                        .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
-                    
-                    Text("學號: \(student.studentId)")
-                        .font(.caption)
-                        .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
-                                        
-                    Text("性別: \(student.gender)")
-                        .font(.caption)
-                        .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
-                }
-            }
-            
-            Spacer()
-            
-            
+        LazyVGrid(columns: columns, spacing: 0) {
+            Text("\(student.id)")
+            Text(student.name)
+            Text(student.studentId)
+            Text(student.gender)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
-        .background(isSelected ? Color.accentColor : Color.clear)
-        .cornerRadius(8)
+        .font(.caption)
+        .padding(8)
+        .background(isSelected ? Color.accentColor.opacity(0.3) : Color.white)
+        .overlay(
+            Rectangle()
+                .stroke(Color.gray.opacity(0.5), lineWidth: 0.5)
+        )
     }
 }
+
 
 // MARK: - 新增學生視圖
 struct AddStudentView: View {
@@ -812,7 +794,7 @@ struct EditStudentView: View {
 #Preview {
     ContentView()
 }
-
+/*
 // MARK: - App 入口
 @main
 struct StudentManagementApp: App {
@@ -822,3 +804,4 @@ struct StudentManagementApp: App {
         }
     }
 }
+*/
