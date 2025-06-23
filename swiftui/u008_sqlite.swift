@@ -30,12 +30,14 @@ class DatabaseManager: ObservableObject {
         // 獲取文檔目錄路徑
         let fileURL = try! FileManager.default
             .url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            .appendingPathComponent("StudentDatabase.sqlite")
+            .appendingPathComponent("mydb.db")
         
         dbPath = fileURL.path
         print("資料庫位置: \(dbPath)")
         
-        openDatabase()
+        DispatchQueue.main.async {
+            self.openDatabase()
+        }
     }
     
     deinit {
@@ -46,11 +48,17 @@ class DatabaseManager: ObservableObject {
     private func openDatabase() {
         if sqlite3_open(dbPath, &db) == SQLITE_OK {
             print("成功開啟資料庫")
-            statusMessage = "資料庫連線成功！"
+            DispatchQueue.main.async {
+                self.statusMessage = "資料庫連線成功！"
+            }
             createVersionTable()
         } else {
             print("無法開啟資料庫")
-            statusMessage = "資料庫連線失敗"
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("SQLite 錯誤: \(errorMessage)")
+            DispatchQueue.main.async {
+                self.statusMessage = "資料庫連線失敗: \(errorMessage)"
+            }
         }
     }
     
@@ -72,7 +80,11 @@ class DatabaseManager: ObservableObject {
         if sqlite3_exec(db, createVersionTableSQL, nil, nil, nil) == SQLITE_OK {
             checkDatabaseVersion()
         } else {
-            statusMessage = "建立版本表失敗"
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("建立版本表失敗: \(errorMessage)")
+            DispatchQueue.main.async {
+                self.statusMessage = "建立版本表失敗: \(errorMessage)"
+            }
         }
     }
     
@@ -89,7 +101,9 @@ class DatabaseManager: ObservableObject {
         sqlite3_finalize(statement)
         
         print("當前資料庫版本: \(currentDbVersion)")
-        statusMessage = "資料庫版本: \(currentDbVersion) -> \(currentVersion)"
+        DispatchQueue.main.async {
+            self.statusMessage = "資料庫版本: \(currentDbVersion) -> \(self.currentVersion)"
+        }
         
         performMigration(from: currentDbVersion)
     }
@@ -100,14 +114,18 @@ class DatabaseManager: ObservableObject {
         } else if version < 2 {
             migrationV2()
         } else {
-            statusMessage = "資料庫已是最新版本"
+            DispatchQueue.main.async {
+                self.statusMessage = "資料庫已是最新版本"
+            }
             loadStudents()
         }
     }
     
     // MARK: - 資料庫遷移
     private func migrationV1() {
-        statusMessage = "正在執行遷移 v1 - 建立學生資料表..."
+        DispatchQueue.main.async {
+            self.statusMessage = "正在執行遷移 v1 - 建立學生資料表..."
+        }
         
         let createTableSQL = """
             CREATE TABLE IF NOT EXISTS student (
@@ -118,27 +136,41 @@ class DatabaseManager: ObservableObject {
         """
         
         if sqlite3_exec(db, createTableSQL, nil, nil, nil) == SQLITE_OK {
+            print("成功建立學生資料表")
             updateDatabaseVersion(to: 1)
         } else {
-            statusMessage = "遷移 v1 失敗"
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("遷移 v1 失敗: \(errorMessage)")
+            DispatchQueue.main.async {
+                self.statusMessage = "遷移 v1 失敗: \(errorMessage)"
+            }
         }
     }
     
     private func migrationV2() {
-        statusMessage = "正在執行遷移 v2 - 新增性別欄位..."
+        DispatchQueue.main.async {
+            self.statusMessage = "正在執行遷移 v2 - 新增性別欄位..."
+        }
         
         let alterTableSQL = "ALTER TABLE student ADD COLUMN gender TEXT DEFAULT '未指定'"
         
         if sqlite3_exec(db, alterTableSQL, nil, nil, nil) == SQLITE_OK {
+            print("成功新增性別欄位")
             updateDatabaseVersion(to: 2)
         } else {
             // 檢查是否是因為欄位已存在
             let errorMsg = String(cString: sqlite3_errmsg(db))
             if errorMsg.contains("duplicate column name") {
-                statusMessage = "性別欄位已存在"
+                print("性別欄位已存在")
+                DispatchQueue.main.async {
+                    self.statusMessage = "性別欄位已存在"
+                }
                 updateDatabaseVersion(to: 2)
             } else {
-                statusMessage = "遷移 v2 失敗: \(errorMsg)"
+                print("遷移 v2 失敗: \(errorMsg)")
+                DispatchQueue.main.async {
+                    self.statusMessage = "遷移 v2 失敗: \(errorMsg)"
+                }
             }
         }
     }
@@ -151,7 +183,10 @@ class DatabaseManager: ObservableObject {
             sqlite3_bind_int(statement, 1, Int32(version))
             
             if sqlite3_step(statement) == SQLITE_DONE {
-                statusMessage = "資料庫已更新到版本 \(version)"
+                print("資料庫版本已更新到: \(version)")
+                DispatchQueue.main.async {
+                    self.statusMessage = "資料庫已更新到版本 \(version)"
+                }
                 
                 if version < currentVersion {
                     performMigration(from: version)
@@ -164,7 +199,9 @@ class DatabaseManager: ObservableObject {
     }
     
     private func onMigrationComplete() {
-        statusMessage = "資料庫遷移完成！版本: \(currentVersion)"
+        DispatchQueue.main.async {
+            self.statusMessage = "資料庫遷移完成！版本: \(self.currentVersion)"
+        }
         checkExistingData()
     }
     
@@ -180,34 +217,48 @@ class DatabaseManager: ObservableObject {
         }
         sqlite3_finalize(statement)
         
+        print("現有學生資料數量: \(count)")
+        
         if count == 0 {
-            statusMessage = "資料庫已準備就緒 (無現有資料)"
+            DispatchQueue.main.async {
+                self.statusMessage = "資料庫已準備就緒 (無現有資料)"
+            }
             insertSampleData()
         } else {
-            statusMessage = "資料庫已準備就緒 (包含 \(count) 筆學生資料)"
+            DispatchQueue.main.async {
+                self.statusMessage = "資料庫已準備就緒 (包含 \(count) 筆學生資料)"
+            }
             loadStudents()
         }
     }
     
     // MARK: - 示例資料
     private func insertSampleData() {
+        print("正在插入示例資料...")
         let sampleStudents = [
             ("張小明", "20001", "男"),
             ("李小華", "20002", "女"),
             ("王小美", "20003", "女")
         ]
         
+        var successCount = 0
         for (name, studentId, gender) in sampleStudents {
-            addStudent(name: name, studentId: studentId, gender: gender)
+            if addStudentInternal(name: name, studentId: studentId, gender: gender) {
+                successCount += 1
+            }
         }
         
-        statusMessage = "已插入示例學生資料"
+        print("成功插入 \(successCount) 筆示例資料")
+        DispatchQueue.main.async {
+            self.statusMessage = "已插入示例學生資料 (\(successCount) 筆)"
+        }
         loadStudents()
     }
     
     // MARK: - CRUD 操作
     func loadStudents() {
-        students.removeAll()
+        print("正在載入學生資料...")
+        var tempStudents: [Student] = []
         
         let querySQL = "SELECT id, name, student_id, COALESCE(gender, '未指定') as gender FROM student ORDER BY student_id"
         var statement: OpaquePointer?
@@ -215,36 +266,122 @@ class DatabaseManager: ObservableObject {
         if sqlite3_prepare_v2(db, querySQL, -1, &statement, nil) == SQLITE_OK {
             while sqlite3_step(statement) == SQLITE_ROW {
                 let id = Int(sqlite3_column_int(statement, 0))
-                let name = String(cString: sqlite3_column_text(statement, 1))
-                let studentId = String(cString: sqlite3_column_text(statement, 2))
-                let gender = String(cString: sqlite3_column_text(statement, 3))
                 
-                students.append(Student(id: id, name: name, studentId: studentId, gender: gender))
+                // 修復文字資料讀取問題 - 使用更安全的方式
+                var name = "未知"
+                var studentId = "未知"
+                var gender = "未指定"
+                
+                // 檢查並讀取 name
+                if let nameBytes = sqlite3_column_text(statement, 1) {
+                    name = String(cString: nameBytes)
+                }
+                
+                // 檢查並讀取 student_id
+                if let studentIdBytes = sqlite3_column_text(statement, 2) {
+                    studentId = String(cString: studentIdBytes)
+                }
+                
+                // 檢查並讀取 gender
+                if let genderBytes = sqlite3_column_text(statement, 3) {
+                    gender = String(cString: genderBytes)
+                }
+                
+                // 額外檢查：如果讀取到的是空字串，顯示原始位元組
+                if name.isEmpty || studentId.isEmpty {
+                    print("警告: 發現空字串 - ID=\(id)")
+                    print("Name column type: \(sqlite3_column_type(statement, 1))")
+                    print("StudentId column type: \(sqlite3_column_type(statement, 2))")
+                    print("Name bytes: \(sqlite3_column_bytes(statement, 1))")
+                    print("StudentId bytes: \(sqlite3_column_bytes(statement, 2))")
+                }
+                
+                let student = Student(id: id, name: name, studentId: studentId, gender: gender)
+                tempStudents.append(student)
+                
+                // print("載入學生: ID=\(id), 姓名=[\(name)], 學號=[\(studentId)], 性別=[\(gender)]")
             }
+        } else {
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("查詢學生資料失敗: \(errorMessage)")
         }
         sqlite3_finalize(statement)
         
-        statusMessage = "已載入 \(students.count) 筆學生資料"
+        print("共載入 \(tempStudents.count) 筆學生資料")
+        
+        DispatchQueue.main.async {
+            self.students = tempStudents
+            self.statusMessage = "已載入 \(tempStudents.count) 筆學生資料"
+        }
     }
     
-    func addStudent(name: String, studentId: String, gender: String) -> Bool {
+    // 內部使用的新增方法，不會觸發 UI 更新
+    private func addStudentInternal(name: String, studentId: String, gender: String) -> Bool {
+        print("準備新增學生: 姓名=[\(name)], 學號=[\(studentId)], 性別=[\(gender)]")
+        
         let insertSQL = "INSERT INTO student (name, student_id, gender) VALUES (?, ?, ?)"
         var statement: OpaquePointer?
         
         if sqlite3_prepare_v2(db, insertSQL, -1, &statement, nil) == SQLITE_OK {
-            sqlite3_bind_text(statement, 1, name, -1, nil)
-            sqlite3_bind_text(statement, 2, studentId, -1, nil)
-            sqlite3_bind_text(statement, 3, gender, -1, nil)
+            // 修復: 使用 SQLITE_TRANSIENT 而不是閉包
+            sqlite3_bind_text(statement, 1, name, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+            sqlite3_bind_text(statement, 2, studentId, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+            sqlite3_bind_text(statement, 3, gender, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+            
+            print("SQL 綁定完成，準備執行...")
             
             if sqlite3_step(statement) == SQLITE_DONE {
                 sqlite3_finalize(statement)
-                loadStudents()
+                print("成功新增學生到資料庫: \(name) (\(studentId))")
+                
+                // 立即驗證插入結果
+                verifyLastInsert()
                 return true
+            } else {
+                let errorMessage = String(cString: sqlite3_errmsg(db))
+                print("SQL 執行失敗: \(errorMessage)")
             }
+        } else {
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            print("SQL 準備失敗: \(errorMessage)")
         }
         
         sqlite3_finalize(statement)
         return false
+    }
+    
+    // 驗證最後插入的資料
+    private func verifyLastInsert() {
+        let lastRowId = sqlite3_last_insert_rowid(db)
+        print("最後插入的資料 ID: \(lastRowId)")
+        
+        let querySQL = "SELECT name, student_id, gender FROM student WHERE id = ?"
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare_v2(db, querySQL, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_int64(statement, 1, lastRowId)
+            
+            if sqlite3_step(statement) == SQLITE_ROW {
+                let name = sqlite3_column_text(statement, 0)
+                let studentId = sqlite3_column_text(statement, 1)
+                let gender = sqlite3_column_text(statement, 2)
+                
+                let nameStr = name != nil ? String(cString: name!) : "NULL"
+                let studentIdStr = studentId != nil ? String(cString: studentId!) : "NULL"
+                let genderStr = gender != nil ? String(cString: gender!) : "NULL"
+                
+                print("驗證插入結果: 姓名=[\(nameStr)], 學號=[\(studentIdStr)], 性別=[\(genderStr)]")
+            }
+        }
+        sqlite3_finalize(statement)
+    }
+    
+    func addStudent(name: String, studentId: String, gender: String) -> Bool {
+        let success = addStudentInternal(name: name, studentId: studentId, gender: gender)
+        if success {
+            loadStudents()
+        }
+        return success
     }
     
     func updateStudent(id: Int, name: String, studentId: String, gender: String) -> Bool {
@@ -252,15 +389,19 @@ class DatabaseManager: ObservableObject {
         var statement: OpaquePointer?
         
         if sqlite3_prepare_v2(db, updateSQL, -1, &statement, nil) == SQLITE_OK {
-            sqlite3_bind_text(statement, 1, name, -1, nil)
-            sqlite3_bind_text(statement, 2, studentId, -1, nil)
-            sqlite3_bind_text(statement, 3, gender, -1, nil)
+            // 修復: 使用正確的綁定方式
+            sqlite3_bind_text(statement, 1, name, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+            sqlite3_bind_text(statement, 2, studentId, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+            sqlite3_bind_text(statement, 3, gender, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
             sqlite3_bind_int(statement, 4, Int32(id))
             
             if sqlite3_step(statement) == SQLITE_DONE {
                 sqlite3_finalize(statement)
                 loadStudents()
                 return true
+            } else {
+                let errorMessage = String(cString: sqlite3_errmsg(db))
+                print("更新學生失敗: \(errorMessage)")
             }
         }
         
@@ -279,6 +420,9 @@ class DatabaseManager: ObservableObject {
                 sqlite3_finalize(statement)
                 loadStudents()
                 return true
+            } else {
+                let errorMessage = String(cString: sqlite3_errmsg(db))
+                print("刪除學生失敗: \(errorMessage)")
             }
         }
         
@@ -305,7 +449,9 @@ class DatabaseManager: ObservableObject {
             }
         }
         
-        statusMessage = "成功新增 \(successCount) 筆測試資料"
+        DispatchQueue.main.async {
+            self.statusMessage = "成功新增 \(successCount) 筆測試資料"
+        }
     }
     
     private func getMaxStudentId() -> Int {
@@ -319,7 +465,9 @@ class DatabaseManager: ObservableObject {
         
         if sqlite3_exec(db, deleteSQL, nil, nil, nil) == SQLITE_OK {
             loadStudents()
-            statusMessage = "所有學生資料已清空"
+            DispatchQueue.main.async {
+                self.statusMessage = "所有學生資料已清空"
+            }
             return true
         }
         return false
@@ -353,6 +501,10 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
+                    
+                    Text("學生數量: \(dbManager.students.count)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
                 .padding()
                 .background(Color(.systemGray6))
@@ -360,16 +512,29 @@ struct ContentView: View {
                 Divider()
                 
                 // 學生列表
-                List {
-                    ForEach(dbManager.students) { student in
-                        StudentRowView(student: student)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                selectedStudent = student
-                            }
+                if dbManager.students.isEmpty {
+                    VStack {
+                        Spacer()
+                        Text("暫無學生資料")
+                            .foregroundStyle(.secondary)
+                            .font(.title3)
+                        Text("點擊下方按鈕新增學生或載入測試資料")
+                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                        Spacer()
                     }
+                } else {
+                    List {
+                        ForEach(dbManager.students) { student in
+                            StudentRowView(student: student, isSelected: selectedStudent?.id == student.id)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedStudent = student
+                                }
+                        }
+                    }
+                    .listStyle(PlainListStyle())
                 }
-                .listStyle(PlainListStyle())
                 
                 Divider()
                 
@@ -401,7 +566,7 @@ struct ContentView: View {
                     }
                     .buttonStyle(.bordered)
                     
-                    Button("寫入測試資料") {
+                    Button("測試資料") {
                         dbManager.insertTestData()
                     }
                     .buttonStyle(.bordered)
@@ -455,33 +620,43 @@ struct ContentView: View {
 // MARK: - 學生行視圖
 struct StudentRowView: View {
     let student: Student
+    let isSelected: Bool
     
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(student.name)
                     .font(.headline)
+                    .foregroundStyle(isSelected ? .white : .primary)
                 
                 HStack {
+                    
+                    Text("ID: \(student.id)")
+                        .font(.caption2)
+                        .foregroundStyle(isSelected ? .white.opacity(0.6) : .secondary)
+                    
+                    Text("姓名: \(student.name)")
+                        .font(.caption)
+                        .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
+                    
                     Text("學號: \(student.studentId)")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
-                    
-                    Spacer()
-                    
+                        .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
+                                        
                     Text("性別: \(student.gender)")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
                 }
             }
             
             Spacer()
             
-            Text("ID: \(student.id)")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+            
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .background(isSelected ? Color.accentColor : Color.clear)
+        .cornerRadius(8)
     }
 }
 
@@ -526,7 +701,7 @@ struct AddStudentView: View {
                         addStudent()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-                             studentId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                              studentId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
         }
@@ -549,6 +724,8 @@ struct AddStudentView: View {
         }
     }
 }
+
+
 
 // MARK: - 編輯學生視圖
 struct EditStudentView: View {
@@ -602,7 +779,7 @@ struct EditStudentView: View {
                         updateStudent()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-                             studentId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                              studentId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
         }
@@ -617,7 +794,12 @@ struct EditStudentView: View {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedStudentId = studentId.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        if dbManager.updateStudent(id: student.id, name: trimmedName, studentId: trimmedStudentId, gender: selectedGender) {
+        if dbManager.updateStudent(
+            id: student.id,
+            name: trimmedName,
+            studentId: trimmedStudentId,
+            gender: selectedGender
+        ) {
             onComplete()
             dismiss()
         } else {
@@ -625,6 +807,10 @@ struct EditStudentView: View {
             showingAlert = true
         }
     }
+}
+
+#Preview {
+    ContentView()
 }
 
 // MARK: - App 入口
