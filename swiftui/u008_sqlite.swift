@@ -260,7 +260,7 @@ class DatabaseManager: ObservableObject {
         print("正在載入學生資料...")
         var tempStudents: [Student] = []
         
-        let querySQL = "SELECT id, name, student_id, COALESCE(gender, '未指定') as gender FROM student ORDER BY student_id"
+        let querySQL = "SELECT id, name, student_id, COALESCE(gender, '未指定') as gender FROM student ORDER BY id"
         var statement: OpaquePointer?
         
         if sqlite3_prepare_v2(db, querySQL, -1, &statement, nil) == SQLITE_OK {
@@ -487,6 +487,8 @@ struct ContentView: View {
     @State private var showingDeleteAlert = false
     @State private var showingClearAlert = false
     
+    
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -511,7 +513,26 @@ struct ContentView: View {
                 
                 Divider()
                 
-                // 學生列表
+                // 固定標頭！ (文字置中對齊)
+                HStack {
+                    Text("ID")
+                        .frame(width: 50) // 固定寬度，文字預設置中
+                    Text("姓名")
+                        .frame(minWidth: 80, maxWidth: .infinity) // 彈性寬度，文字預設置中
+                    Text("學號")
+                        .frame(minWidth: 80, maxWidth: .infinity) // 彈性寬度，文字預設置中
+                    Text("性別")
+                        .frame(width: 60) // 固定寬度，文字預設置中
+                }
+                .font(.caption.bold())
+                .padding(.horizontal, 16) // 保持與 List 的水平邊距一致
+                .padding(.vertical, 10) // 增加垂直內邊距，讓標頭更高一點
+                .background(Color(.systemGray4)) // 調整標頭背景色，與列表區分更明顯
+                .foregroundStyle(.white) // 標頭文字改為白色，增加對比
+                
+                Divider() // 標頭下方的分隔線
+                
+                // 學生列表 (內容置中對齊)
                 if dbManager.students.isEmpty {
                     VStack {
                         Spacer()
@@ -531,9 +552,13 @@ struct ContentView: View {
                                 .onTapGesture {
                                     selectedStudent = student
                                 }
+                                .listRowSeparator(.hidden) // 隱藏列表行預設分隔線，讓 StudentRowView 內的背景看起來更平滑
+                                .listRowBackground(Color.clear) // 確保行背景透明，讓選中色正常顯示
+                                .listRowInsets(EdgeInsets()) // 移除列表行預設邊距，讓 StudentRowView 完全控制內邊距
                         }
                     }
-                    .listStyle(PlainListStyle())
+                    .listStyle(.plain)
+                    .background(Color.white) // 整個列表的背景色
                 }
                 
                 Divider()
@@ -621,26 +646,26 @@ struct ContentView: View {
 struct StudentRowView: View {
     let student: Student
     let isSelected: Bool
-
-    let columns: [GridItem] = Array(repeating: GridItem(.flexible(minimum: 60), spacing: 1), count: 4)
-
+    
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 0) {
+        HStack {
+            // 文字置中對齊，並為每個欄位設定適當的最小或固定寬度
             Text("\(student.id)")
+                .frame(width: 50) // ID 欄位固定寬度，文字預設置中
             Text(student.name)
+                .frame(minWidth: 80, maxWidth: .infinity) // 姓名欄位彈性寬度，文字預設置中
             Text(student.studentId)
+                .frame(minWidth: 80, maxWidth: .infinity) // 學號欄位彈性寬度，文字預設置中
             Text(student.gender)
+                .frame(width: 60) // 性別欄位固定寬度，文字預設置中
         }
         .font(.caption)
-        .padding(8)
-        .background(isSelected ? Color.accentColor.opacity(0.3) : Color.white)
-        .overlay(
-            Rectangle()
-                .stroke(Color.gray.opacity(0.5), lineWidth: 0.5)
-        )
+        .padding(.vertical, 8) // 增加垂直內邊距，讓行高更舒適
+        .padding(.horizontal, 16) // 保持與 List 的水平邊距一致
+        .background(isSelected ? Color.accentColor.opacity(0.2) : Color.clear) // 調整選中時的背景透明度
+        // List 本身會處理分隔線，所以這裡不需要額外的 overlay
     }
 }
-
 
 // MARK: - 新增學生視圖
 struct AddStudentView: View {
