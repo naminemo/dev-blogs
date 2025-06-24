@@ -203,3 +203,8 @@ struct AdvancedSettingsView: View {
 - 深層導航時隱藏 TabBar: 在 AdvancedSettingsView 中，當用戶導航到較深的層級時，TabBar 會被隱藏
 
 此設計模式在許多 iOS 應用中都很常見，例如當使用者進入編輯模式或查看詳細內容時。
+
+注意：
+如果這裡的 NavigationStack 換為 NavigationView 會有錯誤  
+會發生深層導航的頁面 tabBar 被隱藏了  
+但回到上層會仍是隱藏的無法顯示
