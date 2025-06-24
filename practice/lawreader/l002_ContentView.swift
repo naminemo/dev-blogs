@@ -130,21 +130,47 @@ struct ContentView: View {
 // MARK: - 法規條文視圖
 struct LawView: View {
     let law: Law
+    @State private var isExpanded = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // 條文標題
-            Text("第 \(law.articleNumber) 條")
-                .font(.headline)
-                .fontWeight(.bold)
-                .foregroundColor(.primary)
+        VStack(alignment: .leading, spacing: 0) {
+            // 條文標題（可點擊的標題列）
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isExpanded.toggle()
+                }
+            }) {
+                HStack {
+                    Text("第 \(law.articleNumber) 條")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                    
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 4)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(PlainButtonStyle())
             
-            // 段落
-            ForEach(law.paragraphs) { paragraph in
-                ParagraphView(paragraph: paragraph)
+            // 展開的內容
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(law.paragraphs) { paragraph in
+                        ParagraphView(paragraph: paragraph)
+                    }
+                }
+                .padding(.top, 8)
+                .padding(.leading, 4)
+                .transition(.opacity.combined(with: .slide))
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 4)
     }
 }
 
@@ -156,12 +182,11 @@ struct ParagraphView: View {
         VStack(alignment: .leading, spacing: 8) {
             // 段落內容
             HStack(alignment: .top, spacing: 4) {
-                //if !paragraph.number.trimmingCharacters(in: .whitespaces).isEmpty {
-                    Text(paragraph.number)
-                        .font(.body)
-                        .fontWeight(.medium)
-                        .foregroundColor(.secondary)
-                //}
+                Text(paragraph.number)
+                    .font(.body)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                    .frame(minWidth: 20, alignment: .leading)
                 
                 Text(paragraph.content)
                     .font(.body)
@@ -180,7 +205,7 @@ struct ParagraphView: View {
     }
 }
 
-// MARK: - 款視圖
+// MARK: - 款項視圖
 struct ClauseView: View {
     let clause: Clause
     
@@ -210,7 +235,7 @@ struct ClauseView: View {
     }
 }
 
-// MARK: - 目, 子款項視圖
+// MARK: - 子款項視圖
 struct SubclauseView: View {
     let subclause: Subclause
     
@@ -228,8 +253,6 @@ struct SubclauseView: View {
         }
     }
 }
-
-
 
 // MARK: - 預覽
 #Preview {
