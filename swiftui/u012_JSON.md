@@ -94,6 +94,7 @@ struct ContentView: View {
                 
                 print("=== jsonData ===")
                 print(jsonData)
+                print(type(of: jsonData))
                 
                 try jsonData.write(to: fileURL)
                 print("Data successfully written to \(fileURL.absoluteString)")
