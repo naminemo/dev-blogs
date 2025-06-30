@@ -38,7 +38,7 @@ struct ContentView: View {
 
 ![ss 2025-06-26 15-22-35](https://raw.githubusercontent.com/naminemo/pic/main/dev/ss%202025-06-26%2015-22-35.jpg)
 
-# Grid
+## Grid
 
 ```swift
 import SwiftUI
@@ -94,7 +94,7 @@ struct ContentView: View {
 
 ![ss 2025-06-26 15-23-47](https://raw.githubusercontent.com/naminemo/pic/main/dev/ss%202025-06-26%2015-23-47.jpg)
 
-# Grid - 讓資料從 Array 傳入
+## Grid - 讓資料從 Array 傳入
 
 ```swift
 import SwiftUI
