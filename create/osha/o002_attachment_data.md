@@ -1,5 +1,30 @@
 # 附件資料
 
+// 01
+// 職業安全衛生法
+// https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060001
+// 共 55 條，無附件
+
+// 02
+// 職業安全衛生法施行細則
+// https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060002
+// 共 54 條，無附件
+
+// 03
+// 職業安全衛生教育訓練規則
+// https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060010
+// 共 43 條，超多多多附件
+
+// 04
+// 職業安全衛生設施規則
+// https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060009
+// 共 328 條，有附件
+
+// 05
+// 職業安全衛生管理辦法
+// https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060027
+// 共 90 條，有附件
+
 ## 3. 職業安全衛生教育訓練規則
 
 職業安全衛生教育訓練規則
