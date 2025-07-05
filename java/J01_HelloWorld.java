@@ -1,11 +1,10 @@
 public class J01_HelloWorld {
     public static void main(String[] args) {
 
-        int x = 5;
-        do {
-            System.out.println("do-while 執行：" + x);
-            x++;
-        } while (x < 1);
+        Dog myDog = new Dog(); // 創建一個 Dog 物件
+        myDog.name = "旺財";   // 設置物件的屬性
 
+        myDog.bark();         // 調用物件的方法
     }
 }
+

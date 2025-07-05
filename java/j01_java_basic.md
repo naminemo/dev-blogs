@@ -154,3 +154,19 @@ do {
     x++;
 } while (x < 1);
 ```
+
+## Java 原始碼檔案的名稱必須與該類的名稱完全一致
+
+如果我們有一個 public class，那麼 Java 原始碼檔案的名稱必須與該類的名稱完全一致，並且副檔名為 .java。
+
+例如：
+
+```java
+public class HelloWorld { 
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+}
+```
+檔案名稱必須為 HelloWorld.java 才可以。 
+
