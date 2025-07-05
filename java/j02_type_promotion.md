@@ -18,6 +18,26 @@ public class TypePromotionExample1 {
 
 雖然 a 和 b 是 byte，但運算時會提升為 int，所以不能直接存到 byte。
 
+```java
+byte a = 10;
+byte b = 20;
+byte c = a + b; // 錯誤：Type mismatch: cannot convert from int to byte
+```
+
+在這行： `byte c = a + b;` 中
+- a + b → 會被 Java 編譯器轉換成 int 計算
+- 結果是 int，不能直接指派給 byte，因為 可能會溢位 (overflow)
+- Java 是 強型別語言，不會自動把 int 轉回 byte (需要你明確地轉型)
+
+### 強制轉型 type cast
+
+```java
+byte c = (byte)(a + b); // 強制將 int 轉回 byte
+System.out.println(c);  // 輸出 30
+```
+
+
+
 ## int + long
 
 ```java
