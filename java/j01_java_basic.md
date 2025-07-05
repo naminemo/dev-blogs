@@ -129,5 +129,28 @@ switch (day) {
 
 ### 知道執行次數
 
+```java
+for (int i = 0; i < 10; i++) {
+    System.out.println("Hello World " + i);
+}
+```
+
 ### 不知道執行次數，但知道結束條件
 
+```java
+int count = 0;
+while (count < 3) {
+    System.out.println("循環次數：" + count);
+    count++;
+}
+```
+
+### 至少執行一次，然後再檢查條件。
+
+```java
+int x = 5;
+do {
+    System.out.println("do-while 執行：" + x);
+    x++;
+} while (x < 1);
+```
