@@ -504,3 +504,37 @@ FROM
 JOIN 
     department d ON e.department_id = d.id;
 ```
+
+## DELETE
+
+基本語法
+
+```sql
+DELETE FROM table_name
+WHERE condition;
+```
+
+```sql
+DELETE FROM employee
+WHERE id = 8;
+
+SELECT
+    id, name, score
+FROM
+    employee;
+```
+
+刪除整個部門的員工
+
+下面使用了子查詢 (SELECT id FROM department WHERE name = 'Billing') 來找出 Billing 部門的 id。
+
+```sql
+DELETE FROM employee
+WHERE department_id = (SELECT id FROM department WHERE name = 'Billing');
+
+SELECT
+    id, name
+FROM
+    employee;
+```
+
