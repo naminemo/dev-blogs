@@ -18,7 +18,7 @@ CREATE TABLE department (
 );
 
 -- INSERT　data
-INSERT INTO employee VALUES (1, 'Apple', 83, 1);
+INSERT INTO employee(id, name, score, department_id) VALUES (1, 'Apple', 83, 1);
 INSERT INTO employee VALUES (2, 'Sam', 76, 2);
 INSERT INTO employee VALUES (3, 'Helen', 83, 1);
 INSERT INTO employee VALUES (4, 'Jimmy', 83, 3);
