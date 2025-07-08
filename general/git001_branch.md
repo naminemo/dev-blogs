@@ -1,19 +1,27 @@
+#
+
+## git
+
 ### 永造先看目前狀態
+
 ```bash
 git status
 ```
 
 ### 確認目前所在分支
+
 ```bash
 git branch
 ```
 
 ### 創建分支
+
 ```bash
 git branch 分支名稱
 ```
 
 ### 切換分支
+
 ```bash
 git checkout 分支名稱
 ```
