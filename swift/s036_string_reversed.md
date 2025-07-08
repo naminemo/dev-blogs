@@ -27,3 +27,17 @@ for s in greeting {
 print(result)
 // dnuorgyalp ,olleH
 ```
+
+## 使用 reduce
+
+跟字串相加其實都是相同的原理
+
+```swift
+var s = "hello"
+
+var result = s.reduce("") { first, second in
+    String(second) + String(first)
+}
+
+print(result)
+```
