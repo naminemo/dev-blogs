@@ -1,5 +1,6 @@
+# String
 
-### reversed()
+## reversed()
 
 ```swift
 let originalString = "anbiron"
