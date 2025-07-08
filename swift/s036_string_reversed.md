@@ -67,3 +67,25 @@ while currentIndex > str.startIndex {
 
 print(reversedStr) // 輸出: olleh
 ```
+
+## 一樣使用倒數的技巧
+
+```swift
+var str = "hello"
+var reversedStr = ""
+
+print(type(of: reversedStr))
+
+let charArray = Array(str)
+print(charArray)
+
+var len = charArray.count
+
+for i in 0..<len {
+    // reversedStr.append(String(charArray[len - 1 - i]))
+    
+    reversedStr += String(charArray[len - 1 - i])
+}
+
+print(reversedStr)
+```
