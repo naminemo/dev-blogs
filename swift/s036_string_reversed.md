@@ -7,6 +7,7 @@ let originalString = "anbiron"
 let reversedString = String(originalString.reversed())
 
 print(reversedString) // 輸出: noribna
+print(originalString) // 輸出: anbiron
 ```
 
 ## 字串相加
