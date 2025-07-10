@@ -7,9 +7,8 @@ Swift 語言提供了強大的 Codable 協定和相關的 JSONEncoder，可以�
 
 首先，要儲存到 JSON 的資料結構 (通常是 struct 或 class) 必須符合 Codable 協定。  
 Codable 是一個便利的型別別名，  
-結合了 Encodable (用於將 Swift 物件轉換為其他格式，例如 JSON) 和   
+結合了 Encodable (用於將 Swift 物件轉換為其他格式，例如 JSON) 和  
 Decodable (用於將其他格式轉換回 Swift 物件)。
-
 
 ```swift
 import SwiftUI
@@ -174,3 +173,147 @@ struct MyData: Codable {
 ```
 
 MyData 這個 struct 符合 Codable，代表它的實例可以被編碼 (encode) 成 JSON，也可以從 JSON 解碼 (decode) 回來。
+
+## 簡單讀 hardcode 的 jsonString
+
+```swift
+import SwiftUI
+
+struct Question: Codable {
+    let text: String
+    let answers: [String: String]
+}
+
+let jsonString = """
+{
+    "text": "衝剪機械使用具起動控制功能之光電式安全裝置者，應符合下列規定：\\n一、台盤之水平面須距離地面 [ A ] 毫米以上。\\n二、台盤深度須在 [ B ] 毫米以下。\\n三、衝程在 [ C ] 毫米以下。\\n四、曲軸衝床之過定點停止監視裝置之停止點設定，須在 [ D ] 度以內。",
+    "answers": {
+        "A": "750",
+        "B": "1000",
+        "C": "600",
+        "D": "15"
+    },
+}
+"""
+
+struct ContentView: View {
+    
+    @State private var questionData: Question?
+    
+    var body: some View {
+        VStack {
+            Button("click me") {
+                questionData = loadQuestion()
+            }
+            .padding() // 給按鈕內容增加內邊距
+            .background(Color.blue) // 按鈕背景顏色
+            .foregroundStyle(.white) // 按鈕文字顏色
+            .cornerRadius(10) // 圓角方框
+            
+            
+            // 根據 questionData 是否為 nil 來顯示不同的內容
+            if let question = questionData {
+                // 顯示問題內容
+                Text(question.text)
+                    .font(.body) // 設定字體大小
+                    .padding(.horizontal) // 左右內邊距
+                    .multilineTextAlignment(.leading) // 文字左對齊
+            }
+        }
+        .padding()
+    }
+    
+    func loadQuestion() -> Question? {
+        if let jsonData = jsonString.data(using: .utf8) {
+            let decoder = JSONDecoder()
+            do {
+                let question = try decoder.decode(Question.self, from: jsonData)
+                
+                print("====")
+                print(question)
+                return question
+               
+                
+            } catch {
+                // 在這裡捕獲並列印出詳細的錯誤資訊
+                print("解碼錯誤：\(error)")
+                // 您可以根據錯誤類型進行更精細的處理
+                if let decodingError = error as? DecodingError {
+                    switch decodingError {
+                    case .dataCorrupted(let context):
+                        print("資料損壞：\(context.debugDescription)")
+                    case .keyNotFound(let key, let context):
+                        print("找不到鍵 '\(key.stringValue)'：\(context.debugDescription)")
+                    case .typeMismatch(let type, let context):
+                        print("類型不匹配，預期 \(type) 但找到其他：\(context.debugDescription)")
+                    case .valueNotFound(let type, let context):
+                        print("找不到值，預期類型為 \(type)：\(context.debugDescription)")
+                    default:
+                        print("未知的解碼錯誤")
+                    }
+                }
+            }
+        } else {
+            print("無法將 JSON 字串轉換為 Data。")
+        }
+        
+        return nil
+    }
+    
+}
+
+#Preview {
+    ContentView()
+}
+```
+
+以上是一個簡單讀寫在程式碼裡面的 json 格式範例。
+
+來看看故意出錯的話會出現什麼錯誤  
+"text": "衝剪機械使用具起動控制功能之光電式安全裝置者，應符合下列規定：\\n一、台盤之水平面須距離地面 [ A ] 毫米以上。  
+把 \\n 的一個反斜線去掉，也就是變成 \n
+或者 \\n 整個刪掉，再按 enter 換行
+"text": "衝剪機械使用具起動控制功能之光電式安全裝置者，應符合下列規定：
+一、台盤之水平面須距離地面 [ A ] 毫米以上。
+
+按執行的話應該都會看到下面這樣的錯誤訊息：
+
+```bash
+解碼錯誤：dataCorrupted(Swift.DecodingError.Context(codingPath: [], debugDescription: "The given data was not valid JSON.", underlyingError: Optional(Error Domain=NSCocoaErrorDomain Code=3840 "Unescaped control character '0xa' around line 3, column 0." UserInfo={NSDebugDescription=Unescaped control character '0xa' around line 3, column 0., NSJSONSerializationErrorIndex=108})))
+資料損壞：The given data was not valid JSON.
+```
+
+當在 Swift 中使用 JSONDecoder 解析 JSON 字串時，  
+如果遇到 dataCorrupted 和 Unescaped control character 這兩個錯誤，  
+這表示 JSON 字串格式有問題，無法被正確識別。  
+
+### dataCorrupted (資料損壞)
+
+這個錯誤訊息的意思是，JSON 解析器認為提供的數據不是一個有效的 JSON 格式。它可能是：
+
+- 完全無法辨識的數據：例如，您傳入了一個空的字串，或者一個完全不符合 JSON 語法的亂碼。
+- 部分有效但整體損壞：JSON 結構可能部分正確，但在某個地方出現了嚴重的語法錯誤，導致解析器無法繼續。
+- 編碼問題：雖然較少見，但也可能是字串的編碼與預期不符，導致解析器讀取到錯誤的字元。
+
+當 JSONDecoder 遇到這種情況時，它會拋出 DecodingError.dataCorrupted 錯誤，  
+表示它無法將您提供的 Data 物件解析成任何有效的 JSON 結構。
+
+### Unescaped control character (未轉義的控制字元)
+
+這是 dataCorrupted 錯誤的一個更具體的解釋，通常會在 underlyingError（底層錯誤）中顯示。
+
+- 控制字元：指的是 ASCII 表中一些特殊的非列印字元，例如換行符（\n）、回車符（\r）、Tab 符（\t）等。
+- JSON 規範：JSON 對於字串中的這些控制字元有嚴格的規定。
+  如果它們出現在 JSON 字串的值中，必須被「轉義」，
+  也就是說，要在這些字元前面加上一個反斜槓 \。
+  例如，換行符 \n 需要寫成 \\n，Tab 符 \t 需要寫成 \\t。
+- Unescaped (未轉義)：如果 JSON 解析器在預期是普通字元的地方，遇到了這些控制字元，但它們前面又沒有 \ 進行轉義，解析器就會報錯，認為這是無效的語法。
+  
+## 訊息解讀
+
+當收到類似「Unescaped control character '0xa' around line 3, column 0.」的錯誤時：
+
+- 0xa 是換行符的十六進位表示。
+- 這表示在提供的 JSON 字串中，大約在第三行的開頭，JSON 解析器遇到了一個沒有被轉義的換行符。
+- 在這樣的情況下，這通常發生在您使用了 Swift 的多行字串字面量（用三個雙引號 """ 包裹）來定義 JSON 字串時。
+  Swift 的多行字串會保留所有內部的換行，但 JSON 規範要求這些換行（如果它們是 JSON 值的一部分）必須明確地被轉義為 \\n，否則 JSON 解析器會認為這是一個格式錯誤。
