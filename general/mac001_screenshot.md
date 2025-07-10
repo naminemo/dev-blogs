@@ -28,9 +28,8 @@ $ defaults write com.apple.screencapture location ~/Desktop/Screenshot
 
 ![ss 2025-05-06 15-01-31](https://raw.githubusercontent.com/naminemo/pic/main/dev/ss%202025-05-06%2015-01-31.jpg)
 
-以上若成功更新的話可以先執行    
+以上若成功更新的話可以先執行  
 `$ killall SystemUIServer`
-
 
 ## 安裝 rename
 
@@ -50,11 +49,11 @@ $ defaults write com.apple.screencapture location ~/Desktop/Screenshot
 
 以後要快速整批重新命名截圖出來的檔名  
 以後只要執行下列兩行即可
+
 ```bash
 cd Desktop/Screenshot/
 ```  
 
 ```bash
 rename 's/\./-/; s/\./-/;' "ss "*
-``` 
-
+```
