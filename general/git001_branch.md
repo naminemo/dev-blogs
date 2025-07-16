@@ -1,35 +1,47 @@
+#
+
+## git
+
 ### 永造先看目前狀態
+
 ```bash
 git status
 ```
 
 ### 確認目前所在分支
+
 ```bash
 git branch
 ```
 
 ### 創建分支
+
 ```bash
 git branch 分支名稱
 ```
 
 ### 切換分支
+
 ```bash
 git checkout 分支名稱
 ```
 
 ### 直接切換到新創建的分支
+
 ```bash
 git checkout -b 分支名稱
 ```
+
 假設現在在 main 底下，
 使用 git checkout -b bugfix
 那麼就會立即新建且切換到新分支上，新分支的名稱為 bugfix。
 
 ### 列出所有遠端追蹤分支
+
 ```bash
 git branch -r
 ```
+
 -r 表示 --remotes
 
 
