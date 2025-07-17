@@ -24,5 +24,18 @@ Button("返回") {
 替換成以下寫法即可
 
 ```swift
-
+Button {
+    // 重置遊戲狀態，返回遊戲選擇頁面
+    gameStarted = false
+} label: {
+    Text("返回")
+        .font(.headline)
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity)
+        .frame(height: 50)
+        .background(Color.blue)
+        .cornerRadius(12)
+}
+.contentShape(Rectangle())
+.padding(.horizontal)
 ```
