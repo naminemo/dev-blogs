@@ -4,7 +4,7 @@
 
 
 ```zsh
-cautoload -Uz vcs_info
+autoload -Uz vcs_info
 
 # 啟用 Git 分支資訊
 precmd() { vcs_info }
