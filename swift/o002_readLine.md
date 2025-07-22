@@ -2,6 +2,8 @@
 macOS 
 command Line
 
+# 輸入一個數字
+
 ```swift
 print("請輸入一個數字")
 
@@ -25,7 +27,7 @@ print("----OVER----")
 
 ```
 
-
+# 猜數字
 
 ```swift
 import Foundation
@@ -55,4 +57,49 @@ if 答案 == 玩家猜的 {
 
 print("---------GAME OVER---------")
 
+```
+
+# 
+
+```swift
+let label = """
+輸入兩個整數，本程式將為你計算"和"、"差"、"積"、"商"
+"""
+print(label)
+
+var x: Int
+var y: Int
+
+print("第一數")
+x = Int(readLine()!)!
+print("第二數")
+y = Int(readLine()!)!
+
+print("你輸入了 \(x) 和 \(y)")
+var result: Int = x + y
+
+print("兩數之和：\(result)")
+print("兩數之差：\(x - y)")
+print("兩數之積：\(x * y)")
+print("兩數之商：\(Float(x / y))")
+```
+
+#
+
+```swift
+var name: String
+var age: Int
+var height: Int
+var weight: Float
+
+print("請輸入你的名字:")
+name = readLine()!
+
+print("請輸入你的年齡:")
+age = Int(readLine()!)!
+
+print("請輸入你的體重：")
+weight = Float(readLine()!)!
+
+print("喔! \(name), 你好. 原來現在你 \(age) 歲啦! \(weight) 公斤重喔")
 ```
