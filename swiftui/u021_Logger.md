@@ -37,6 +37,7 @@ predicate 這個詞，可以將它理解為「一個用來判斷或描述的條�
 import Foundation
 import OSLog
 
+
 // 定義一個包含所有日誌的靜態結構
 struct Trace {
     
@@ -148,4 +149,105 @@ struct Trace {
 #else
     print("release \(getAppVersion())")
 #endif
+```
+
+# Log version 2
+
+```swift
+import Foundation
+import OSLog
+
+// 定義一個包含所有日誌的靜態結構
+struct Trace {
+    
+    // 建議將 identifier 也定義為 static，方便重複使用
+    static let identifier: String = "com.company.app"
+    
+    // 建立一個專門用於網路相關的日誌實例
+    static let networking = Logger(subsystem: Trace.identifier, category: "networking")
+    
+    // 建立一個專門用於 UI 相關的日誌實例
+    static let ui = Logger(subsystem: Trace.identifier, category: "ui")
+    
+    // 建立一個專門用於資料庫相關的日誌實例
+    static let database = Logger(subsystem: Trace.identifier, category: "database")
+    
+    // 動作
+    static let action = Logger(subsystem: Trace.identifier, category: "action")
+
+    // 如果其他的分類，也可以在這裡增加
+    // ...
+    // view
+    static let advsettings = Logger(subsystem: Trace.identifier, category: "advsettingsview")
+
+}
+
+// 定義一個日誌類別的列舉，提供更安全和可讀的選項
+enum TraceCategory: String, CaseIterable {
+    case networking
+    case ui
+    case database
+    case action
+    case advsettings
+    // 如果 Trace 結構中有新的類別，這裡也要同步增加
+}
+
+struct P {
+    
+    static var display: Bool = true
+
+    static func log(_ category: TraceCategory, _ message: String, display: Bool = P.display) {
+
+        if display {
+            switch category {
+            case .networking:
+                Trace.networking.log("\(message)")
+            case .ui:
+                Trace.ui.log("\(message)")
+            case .database:
+                Trace.database.log("\(message)")
+            case .action:
+                Trace.action.log("\(message)")
+            case .advsettings:
+                Trace.advsettings.log("\(message)")
+
+            }
+        }
+    }
+    
+    
+    static func error(_ category: TraceCategory, _ message: String, display: Bool = P.display) {
+
+        if display {
+            switch category {
+            case .networking:
+                Trace.networking.error("\(message)")
+            case .ui:
+                Trace.ui.error("\(message)")
+            case .database:
+                Trace.database.error("\(message)")
+            case .action:
+                Trace.action.error("\(message)")
+            case .advsettings:
+                Trace.advsettings.error("\(message)")
+            }
+        }
+    }
+}
+
+/*
+// 如何呼叫：
+// 在您的程式碼中，您可以這樣呼叫
+// 啟用 display 會在 Xcode Console 中看到日誌輸出
+ P.error(TraceCategory.advsettings, "🔍 調試：沒有其他帳戶")
+ P.error(.ui, "使用者點擊了登入按鈕", display: true)
+ P.error(.database, "成功從資料庫讀取使用者資料", display: true)
+ P.error(.action, "執行了應用程式啟動檢查", display: true)
+
+// 如果 display 為 false，日誌將不會輸出
+P.error(.networking, "這是不會顯示的日誌", display: false)
+
+// 您也可以直接使用靜態日誌實例
+Trace.ui.log("這是直接使用 Trace.ui 的日誌")
+*/
 ```
