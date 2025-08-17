@@ -60,6 +60,19 @@ class ViewController: UIViewController {
         print(ui.center.y)
     }
 
+    func printInfo2(_ ui: UIView) {
+        print(ui.frame.minX)
+        print(ui.frame.minY)
+        
+        print(ui.frame.midX)
+        print(ui.frame.midY)
+        
+        print(ui.frame.maxX)
+        print(ui.frame.maxY)
+        
+        print(ui.frame.width)
+        print(ui.frame.height)
+    }
 }
 ```
 
