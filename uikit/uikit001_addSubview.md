@@ -28,4 +28,38 @@ class ViewController: UIViewController { // 定義一個名為 ViewController �
 }
 ```
 
+## print information
+
+```swift
+import UIKit
+
+class ViewController: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let viewArea = CGRect(x: 20, y: 20, width: 300, height: 300)
+        
+        var uiView: UIView!
+        uiView = UIView(frame: viewArea)
+        uiView.backgroundColor = .yellow
+        
+        printInfo(uiView)
+
+        self.view.addSubview(uiView)
+        
+        printInfo(uiView)
+    }
+
+    func printInfo(_ ui: UIView) {
+        print(ui.frame.origin.x)
+        print(ui.frame.origin.y)
+        print(ui.frame.size.width)
+        print(ui.frame.size.height)
+        print(ui.center.x)
+        print(ui.center.y)
+    }
+
+}
+```
 
