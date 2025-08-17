@@ -121,3 +121,40 @@ class ViewController: UIViewController {
 }
 ```
 
+# 常見 iPhone 型號在垂直方向（Portrait）下，view 的 frame 寬度和高度
+
+```swift
+import UIKit
+
+class ViewController: UIViewController {
+
+    // 這個方法在視圖載入記憶體後被呼叫，適合用來進行一次性的初始化設定。
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        print(view.frame.width, view.frame.height) // iPhone 16 Pro: 402, 874
+        
+     
+//        iPhone 型號                   螢幕寬度    螢幕高度   備註
+//                                     (width)    (height)
+//
+//        iPhone 16 Pro Max             440         956
+//        iPhone 16 Plus                430         932
+//        iPhone 16 Pro                 402         874
+//        iPhone 16                     393         852
+//        iPhone 15 Pro Max             430         932    動態島
+//        iPhone 15 Pro /               393         852    動態島
+//        iPhone 15 / 14 / 13 / 12      390         844    動態島/瀏海
+//        iPhone 15 Plus / 14 Plus      430         932    動態島/瀏海
+//        iPhone 14 Pro                 393         852    動態島
+//        iPhone 13 Pro                 390         844    瀏海
+//        iPhone SE (3rd generation)    375         667    無瀏海/傳統Home鍵
+//        iPhone 8 Plus                 414         736    無瀏海/傳統Home鍵
+    }
+
+    // 這個方法在視圖已經顯示在畫面上之後被呼叫，適合用來進行動態的調整或動畫。
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+    }
+}
+```
