@@ -76,3 +76,48 @@ class ViewController: UIViewController {
 }
 ```
 
+# set Position and Size
+
+```swift
+import UIKit
+
+class ViewController: UIViewController {
+
+    // 使用 ! 表示：我知道 ui 現在沒有值，但沒關係，我保證之後會給。
+    // 這個 UI 視圖會在 viewDidLoad() 中被初始化。
+    var ui: UIView!
+    
+    // 這個方法在視圖載入記憶體後被呼叫，適合用來進行一次性的初始化設定。
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // --- 1. 初始化 ui 變數 ---
+        // 建立一個初始的 CGRect 來定義 ui 的位置和大小。
+        let initialFrame = CGRect(x: 20, y: 20, width: 300, height: 300)
+        ui = UIView(frame: initialFrame)
+        
+        // --- 2. 設定 ui 的初始屬性 ---
+        // 將 ui 的背景顏色設定為 systemIndigo，方便您看到它。
+        ui.backgroundColor = .systemIndigo
+        
+        // --- 3. 將 ui 添加到主視圖上 ---
+        // 必須將 ui 加入到當前視圖控制器的主視圖上，它才會被渲染顯示。
+        self.view.addSubview(ui)
+    }
+
+    // 這個方法在視圖已經顯示在畫面上之後被呼叫，適合用來進行動態的調整或動畫。
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // 在這裡，您可以改變 ui 的位置和大小，並觀察它的變化。
+        // 這兩行程式碼會將 ui 的左上角移動到 (100, 200)。
+        ui.frame.origin.x = 100
+        ui.frame.origin.y = 200
+        
+        // 這兩行程式碼會將 ui 的寬度設為 100，高度設為 200。
+        ui.frame.size.width = 100
+        ui.frame.size.height = 200
+    }
+}
+```
+
