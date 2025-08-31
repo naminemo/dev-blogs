@@ -1,14 +1,83 @@
-# macOS 內建的 Ruby 不建議直接覆蓋更新
+# CocoaPods
+
+先確認本地有沒有安裝 CocoaPods
+
+`$ pod --version`
+zsh: command not found: pod
+
+## 在開始安裝前先確認一些套件資料
+
+### 確認 Homebrew
+https://brew.sh/
+
+`% brew --version`
+zsh: command not found: brew
+
+
+### 確認 ruby 資訊
+
+`ruby -v`
+ruby 2.6.10p210 (2022-04-12 revision 67958) [universal.arm64e-darwin24]
+
+`% which ruby`
+/usr/bin/ruby
+
+
 
 ## 方法一：用 rbenv 更新 Ruby（推薦）
 
 ### 1. 安裝 Homebrew（如果還沒有）
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"# macOS 內建的 Ruby 不建議直接覆蓋更新
 ```
 
-安裝好後需重新打開 terminal
+==> /usr/bin/sudo /usr/sbin/chown -R xemao:admin /opt/homebrew
+==> /usr/bin/sudo /bin/mkdir -p /Users/xemao/Library/Caches/Homebrew
+==> /usr/bin/sudo /bin/chmod g+rwx /Users/xemao/Library/Caches/Homebrew
+==> /usr/bin/sudo /usr/sbin/chown -R xemao /Users/xemao/Library/Caches/Homebrew
+==> Searching online for the Command Line Tools
+==> /usr/bin/sudo /usr/bin/touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+==> Installing Command Line Tools for Xcode-16.4
+==> /usr/bin/sudo /usr/sbin/softwareupdate -i Command\ Line\ Tools\ for\ Xcode-16.4
+Software Update Tool
+
+Finding available software
+
+Downloading Command Line Tools for Xcode
+
+(這裡網速慢的話會卡住等一些時間)
+
+...
+
+
+Installing Command Line Tools for Xcode
+(這裡會等一些時間)
+
+Done with Command Line Tools for Xcode
+Done.
+==> /usr/bin/sudo /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
+==> /usr/bin/sudo /bin/rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+==> Downloading and installing Homebrew...
+remote: Enumerating objects: 309600, done.
+remote: Counting objects: 100% (86/86), done.
+remote: Compressing objects: 100% (61/61), done.
+remote: Total 309600 (delta 33), reused 71 (delta 25), pack-reused 309514 (from 2)
+remote: Enumerating objects: 55, done.
+remote: Counting objects: 100% (34/34), done.
+remote: Total 55 (delta 34), reused 34 (delta 34), pack-reused 21 (from 1)
+==> /usr/bin/sudo /bin/mkdir -p /etc/paths.d
+==> /usr/bin/sudo tee /etc/paths.d/homebrew
+/opt/homebrew/bin
+==> /usr/bin/sudo /usr/sbin/chown root:wheel /etc/paths.d/homebrew
+==> /usr/bin/sudo /bin/chmod a+r /etc/paths.d/homebrew
+==> Updating Homebrew...
+==> Downloading https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:20fa657858e44a4b39171d6e4111f8a9716eb62a78ebbd1491d94f90bb7b830a
+##################################################################################################### 100.0%
+==> Pouring portable-ruby-3.4.5.arm64_big_sur.bottle.tar.gz
+==> Installation successful!
+
+安裝好後要重新打開 terminal
 
 
 ### 2. 安裝 rbenv 與 ruby-build
@@ -23,6 +92,8 @@ nano ~/.zshrc
 ```
 
 進到裡裡面加入以下指令
+如果有其他指令，此指令要排在最下面
+
 ```bash
 eval "$(rbenv init - zsh)"
 ```
@@ -42,6 +113,11 @@ which ruby
 /Users/你的帳號/.rbenv/shims/ruby
 ```
 
+錯誤的話應該是看到：
+```bash
+/usr/bin/ruby
+```
+若此時有錯的話可以先跳過，這是因為你還沒安裝其他版本的 ruby
 
 ### 5. 安裝最新版本 Ruby
 ```bash
@@ -78,6 +154,7 @@ rbenv rehash
 ruby -v
 ```  
 ruby 3.4.5 (2025-07-16 revision 20cda200d3) +PRISM [arm64-darwin24]
+
 
 ## CocoaPods
 
@@ -198,3 +275,7 @@ rbenv which pod
 /Users/your_name/.rbenv/versions/3.4.5/bin/pod
 
 能找到檔案路徑（例如 /Users/你/.rbenv/versions/3.4.5/bin/pod）就表示安裝在該 Ruby 版本底下。
+
+
+
+
