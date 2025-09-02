@@ -155,3 +155,7 @@ This is from UtilA
 This is from UtilB
 
 這樣，你就成功地在主專案 Tutorial01 中呼叫了來自獨立套件 Tools 的程式碼。
+
+### 備註
+
+loacl 的 Swift Package Dependencies 可直接修改程式
